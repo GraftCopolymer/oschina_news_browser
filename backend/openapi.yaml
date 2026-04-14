@@ -1,0 +1,654 @@
+openapi: 3.0.0
+info:
+  description: |
+    基于FastAPI开发的OSCHINA资讯代理后端API
+    1. 集成OSCHINA OAuth2.0授权登录
+    2. 后端代理所有OSCHINA OpenAPI请求，客户端无直接调用
+    3. 支持新闻/博客列表/详情、全局搜索
+    4. 自定义用户收藏功能（新闻/博客收藏管理）
+    5. 自定义数据模型适配Flutter客户端展示需求
+  title: OSCHINA IT资讯APP后端API
+  version: 1.0.0
+servers:
+- description: 本地开发服务器
+  url: http://localhost:8000
+- description: 生产环境服务器
+  url: https://api.your-domain.com
+paths:
+  /auth/oschina/authorize-url:
+    get:
+      description: 客户端调用此接口获取授权URL，通过WebView打开进行登录授权
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+          description: 请求成功
+      summary: 获取OSCHINA授权链接
+      tags:
+      - 认证授权
+  /auth/oschina/callback:
+    get:
+      description: 授权成功后回调，后端自动换取OSCHINA Token并生成客户端JWT
+      parameters:
+      - description: OSCHINA授权码
+        explode: true
+        in: query
+        name: code
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+          description: 登录成功
+      summary: OSCHINA授权回调接口
+      tags:
+      - 认证授权
+  /auth/logout:
+    post:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+          description: 请求成功
+      security:
+      - BearerAuth: []
+      summary: 退出登录
+      tags:
+      - 认证授权
+  /news/list:
+    get:
+      description: 后端代理OSCHINA接口，返回自定义适配列表
+      parameters:
+      - description: 1=所有 2=综合新闻 3=软件更新
+        explode: true
+        in: query
+        name: catalog
+        required: false
+        schema:
+          default: "1"
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: "1"
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: pageSize
+        required: false
+        schema:
+          default: "20"
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+          description: 获取成功
+        "401":
+          content:
+            application/json:
+              example:
+                code: 401
+                msg: 请先登录
+                data: null
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+          description: 未授权/登录失效
+      security:
+      - BearerAuth: []
+      summary: 获取新闻列表
+      tags:
+      - 新闻管理
+  /news/detail/{id}:
+    get:
+      description: 后端代理OSCHINA接口，返回自定义详情数据
+      parameters:
+      - description: 新闻ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+          description: 获取成功
+        "401":
+          content:
+            application/json:
+              example:
+                code: 401
+                msg: 请先登录
+                data: null
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+          description: 未授权/登录失效
+      security:
+      - BearerAuth: []
+      summary: 获取新闻详情
+      tags:
+      - 新闻管理
+  /blog/list:
+    get:
+      description: 后端代理OSCHINA接口，返回自定义适配列表
+      parameters:
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: pageSize
+        required: false
+        schema:
+          default: 20
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+          description: 获取成功
+        "401":
+          content:
+            application/json:
+              example:
+                code: 401
+                msg: 请先登录
+                data: null
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+          description: 未授权/登录失效
+      security:
+      - BearerAuth: []
+      summary: 获取博客列表
+      tags:
+      - 博客管理
+  /blog/detail/{id}:
+    get:
+      description: 后端代理OSCHINA接口，返回自定义详情数据
+      parameters:
+      - description: 博客ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+          description: 获取成功
+        "401":
+          content:
+            application/json:
+              example:
+                code: 401
+                msg: 请先登录
+                data: null
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+          description: 未授权/登录失效
+      security:
+      - BearerAuth: []
+      summary: 获取博客详情
+      tags:
+      - 博客管理
+  /search:
+    get:
+      description: 支持搜索新闻、博客，后端代理OSCHINA搜索接口
+      parameters:
+      - description: 搜索关键词
+        explode: true
+        in: query
+        name: q
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: "搜索类型, 取值 news, blog, project, post"
+        explode: true
+        in: query
+        name: catalog
+        required: false
+        schema:
+          default: news
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: pageSize
+        required: false
+        schema:
+          default: 20
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+          description: 搜索成功
+        "401":
+          content:
+            application/json:
+              example:
+                code: 401
+                msg: 请先登录
+                data: null
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+          description: 未授权/登录失效
+      security:
+      - BearerAuth: []
+      summary: 全局搜索
+      tags:
+      - 搜索功能
+  /collect/add:
+    post:
+      description: 保存收藏类型+ID，后端关联用户
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CollectRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+          description: 请求成功
+        "401":
+          content:
+            application/json:
+              example:
+                code: 401
+                msg: 请先登录
+                data: null
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+          description: 未授权/登录失效
+      security:
+      - BearerAuth: []
+      summary: 添加收藏（新闻/博客）
+      tags:
+      - 收藏管理
+  /collect/remove:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CollectRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+          description: 请求成功
+        "401":
+          content:
+            application/json:
+              example:
+                code: 401
+                msg: 请先登录
+                data: null
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+          description: 未授权/登录失效
+      security:
+      - BearerAuth: []
+      summary: 取消收藏
+      tags:
+      - 收藏管理
+  /collect/list:
+    get:
+      description: 后端根据收藏ID批量请求OSCHINA，返回列表数据
+      parameters:
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: pageSize
+        required: false
+        schema:
+          default: 20
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+          description: 获取成功
+        "401":
+          content:
+            application/json:
+              example:
+                code: 401
+                msg: 请先登录
+                data: null
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+          description: 未授权/登录失效
+      security:
+      - BearerAuth: []
+      summary: 获取我的收藏列表
+      tags:
+      - 收藏管理
+components:
+  responses:
+    Success:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiResponse"
+      description: 请求成功
+    Unauthorized:
+      content:
+        application/json:
+          example:
+            code: 401
+            msg: 请先登录
+            data: null
+          schema:
+            $ref: "#/components/schemas/ApiResponse"
+      description: 未授权/登录失效
+    BadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiResponse"
+      description: 参数错误
+  schemas:
+    ApiResponse:
+      description: 全局统一API响应格式
+      example:
+        msg: 操作成功
+        code: 200
+        data: "{}"
+      properties:
+        code:
+          description: 响应码 200=成功 400=参数错误 401=未授权 500=服务器错误
+          example: 200
+          title: code
+          type: integer
+        msg:
+          description: 响应信息
+          example: 操作成功
+          title: msg
+          type: string
+        data:
+          description: 响应数据
+          nullable: true
+          title: data
+          type: object
+      title: ApiResponse
+      type: object
+    PageResult:
+      description: 分页数据统一格式
+      properties:
+        total:
+          description: 总条数
+          example: 100
+          type: integer
+        page:
+          description: 当前页码
+          example: 1
+          type: integer
+        pageSize:
+          description: 每页条数
+          example: 20
+          type: integer
+        list:
+          description: 数据列表
+          items:
+            type: object
+          type: array
+      type: object
+    InfoItem:
+      description: 新闻/博客列表展示项
+      properties:
+        id:
+          description: 内容ID
+          example: 26754
+          type: integer
+        title:
+          description: 标题
+          example: Flutter 最新版本特性解析
+          type: string
+        author:
+          description: 作者
+          example: 开源中国
+          type: string
+        publishTime:
+          description: 发布时间
+          format: date-time
+          type: string
+        thumbnail:
+          description: 缩略图(无则返回默认图)
+          example: https://www.oschina.net/default-thumbnail.png
+          type: string
+        viewCount:
+          description: 阅读量
+          example: 1200
+          type: integer
+        commentCount:
+          description: 评论数
+          example: 25
+          type: integer
+        type:
+          description: 内容类型 news=新闻 blog=博客
+          enum:
+          - news
+          - blog
+          example: news
+          type: string
+      type: object
+    NewsDetail:
+      description: 新闻详情数据
+      properties:
+        id:
+          example: 26754
+          type: integer
+        title:
+          example: 新闻标题
+          type: string
+        author:
+          example: 作者
+          type: string
+        authorId:
+          example: 253469
+          type: integer
+        publishTime:
+          format: date-time
+          type: string
+        content:
+          description: 新闻HTML内容
+          type: string
+        url:
+          description: 原文链接
+          type: string
+        favorite:
+          description: 0=未收藏 1=已收藏
+          enum:
+          - 0
+          - 1
+          example: 0
+          type: integer
+        commentCount:
+          type: integer
+        relatedList:
+          items:
+            $ref: "#/components/schemas/RelatedItem"
+          type: array
+      type: object
+    BlogDetail:
+      description: 博客详情数据
+      properties:
+        id:
+          example: 49090
+          type: integer
+        title:
+          example: 博客标题
+          type: string
+        author:
+          example: 作者
+          type: string
+        authorId:
+          example: 100399
+          type: integer
+        publishTime:
+          format: date-time
+          type: string
+        content:
+          description: 博客HTML内容
+          type: string
+        url:
+          description: 博客链接
+          type: string
+        favorite:
+          description: 0=未收藏 1=已收藏
+          enum:
+          - 0
+          - 1
+          example: 0
+          type: integer
+        commentCount:
+          type: integer
+      type: object
+    RelatedItem:
+      properties:
+        title:
+          title: title
+          type: string
+        url:
+          title: url
+          type: string
+      title: RelatedItem
+      type: object
+    SearchItem:
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        author:
+          type: string
+        publishTime:
+          format: date-time
+          type: string
+        type:
+          enum:
+          - news
+          - blog
+          - project
+          - post
+          type: string
+        url:
+          type: string
+      type: object
+    CollectRequest:
+      description: 收藏/取消收藏请求参数
+      example:
+        targetId: 26754
+        targetType: news
+      properties:
+        targetType:
+          description: 收藏目标类型
+          enum:
+          - news
+          - blog
+          example: news
+          title: targetType
+          type: string
+        targetId:
+          description: 收藏目标ID
+          example: 26754
+          title: targetId
+          type: integer
+      required:
+      - targetId
+      - targetType
+      title: CollectRequest
+      type: object
+    AuthToken:
+      properties:
+        accessToken:
+          description: 后端JWT令牌
+          type: string
+        expiresIn:
+          description: 过期时间(秒)
+          example: 86400
+          type: integer
+        userInfo:
+          description: 用户基础信息
+          type: object
+      type: object
+  securitySchemes:
+    BearerAuth:
+      bearerFormat: JWT
+      description: 后端自定义JWT认证（客户端登录后获取）
+      scheme: bearer
+      type: http
+    OSCHINA_OAuth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://www.oschina.net/action/oauth2/authorize
+          scopes:
+            read:news: 读取新闻资讯
+            read:blog: 读取博客信息
+            read:search: 搜索功能
+          tokenUrl: https://www.oschina.net/action/openapi/token
+      type: oauth2
