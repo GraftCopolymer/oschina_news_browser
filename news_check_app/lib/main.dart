@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:news_check_app/controllers/auth_controller.dart';
@@ -9,9 +10,15 @@ import 'package:news_check_app/widgets/bottom_navigation_bar.dart';
 import 'package:openapi/openapi.dart';
 
 // 使用本地服务器进行测试
-final api = Openapi(basePathOverride: "http://10.0.2.2:8000").getDefaultApi();
+late final DefaultApi api;
+
+void _initApi() {
+  final dio = Dio();
+  api = Openapi(basePathOverride: "http://10.0.2.2:8000").getDefaultApi();
+}
 
 Future<void> main() async {
+  _initApi();
   WidgetsFlutterBinding.ensureInitialized();
   await StoreUtils.init();
   final authController = Get.put(AuthController());

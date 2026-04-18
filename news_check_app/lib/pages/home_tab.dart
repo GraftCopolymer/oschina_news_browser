@@ -5,6 +5,9 @@ import 'package:get/instance_manager.dart';
 import 'package:news_check_app/controllers/news_list_controller.dart';
 import 'package:news_check_app/models/models.dart';
 import 'package:news_check_app/pages/news_detail_page.dart';
+import 'package:news_check_app/utils/store_keys.dart';
+import 'package:news_check_app/utils/store_utils.dart';
+import 'package:news_check_app/utils/token_utils.dart';
 import 'package:news_check_app/widgets/news_simple_card.dart';
 
 class HomeTab extends StatefulWidget {
@@ -18,10 +21,18 @@ class _HomeTabState extends State<HomeTab> with AutomaticKeepAliveClientMixin {
   final _newsListController = Get.put(NewsListController());
   final List<NewsSimple> _newsItems = [];
 
+  Future<void> _test() async {
+    final token = await StoreUtils.secure.read(key: StoreKeys.TOKEN); 
+    debugPrint("用户 Token: $token");
+    final model = TokenUtils.parseTokenModel(token!);
+    debugPrint("$model");
+  }
+
   @override
   void initState() {
     super.initState();
     _newsListController.loadMore();
+    _test();
   }
 
   @override

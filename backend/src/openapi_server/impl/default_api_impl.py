@@ -1,4 +1,5 @@
 import json
+from datetime import datetime, timedelta
 
 import httpx
 from fastapi import HTTPException
@@ -37,7 +38,9 @@ class DefaultApiImpl(BaseDefaultApi):
             refresh_token = token_info['refresh_token']
             expires_in = token_info['expires_in']
             user_uid = token_info['uid']
-            jwt = create_app_jwt(user_id=user_uid, expires_in=expires_in)
+            expire = datetime.utcnow() + timedelta(seconds=expires_in)
+            jwt = create_app_jwt(user_id=user_uid, expire_stamp=int(expire.timestamp()))
+
             # 保存用户到数据库
             db_user = DBUser(
                 id=user_uid,
@@ -47,13 +50,14 @@ class DefaultApiImpl(BaseDefaultApi):
             )
             with SessionLocal() as db:
                 db_user_ = db.query(DBUser).filter(DBUser.id == db_user.id).first()
-                if not db_user_: # 用户不存在才添加
-                    db.add(db_user)
+                if not db_user_: # 用户不存在才添加, 存在则修改对应的字段
+                    db.merge(db_user)
                     try:
                         db.commit()
                     except Exception as e:
                         print(e)
                         raise HTTPException(status_code=500, detail="用户注册失败")
+
             # 保存到 Redis
             redis_client.set(jwt, json.dumps({
                 'token': token,

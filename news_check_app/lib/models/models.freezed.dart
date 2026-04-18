@@ -842,4 +842,274 @@ as int,
 
 }
 
+
+/// @nodoc
+mixin _$TokenModel {
+
+// 用户 ID
+ String get sub;// 过期时间戳
+ int get exp;
+/// Create a copy of TokenModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$TokenModelCopyWith<TokenModel> get copyWith => _$TokenModelCopyWithImpl<TokenModel>(this as TokenModel, _$identity);
+
+  /// Serializes this TokenModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TokenModel&&(identical(other.sub, sub) || other.sub == sub)&&(identical(other.exp, exp) || other.exp == exp));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,sub,exp);
+
+@override
+String toString() {
+  return 'TokenModel(sub: $sub, exp: $exp)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $TokenModelCopyWith<$Res>  {
+  factory $TokenModelCopyWith(TokenModel value, $Res Function(TokenModel) _then) = _$TokenModelCopyWithImpl;
+@useResult
+$Res call({
+ String sub, int exp
+});
+
+
+
+
+}
+/// @nodoc
+class _$TokenModelCopyWithImpl<$Res>
+    implements $TokenModelCopyWith<$Res> {
+  _$TokenModelCopyWithImpl(this._self, this._then);
+
+  final TokenModel _self;
+  final $Res Function(TokenModel) _then;
+
+/// Create a copy of TokenModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? sub = null,Object? exp = null,}) {
+  return _then(_self.copyWith(
+sub: null == sub ? _self.sub : sub // ignore: cast_nullable_to_non_nullable
+as String,exp: null == exp ? _self.exp : exp // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [TokenModel].
+extension TokenModelPatterns on TokenModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TokenModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _TokenModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TokenModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _TokenModel():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TokenModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _TokenModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String sub,  int exp)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _TokenModel() when $default != null:
+return $default(_that.sub,_that.exp);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String sub,  int exp)  $default,) {final _that = this;
+switch (_that) {
+case _TokenModel():
+return $default(_that.sub,_that.exp);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String sub,  int exp)?  $default,) {final _that = this;
+switch (_that) {
+case _TokenModel() when $default != null:
+return $default(_that.sub,_that.exp);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _TokenModel implements TokenModel {
+  const _TokenModel({required this.sub, required this.exp});
+  factory _TokenModel.fromJson(Map<String, dynamic> json) => _$TokenModelFromJson(json);
+
+// 用户 ID
+@override final  String sub;
+// 过期时间戳
+@override final  int exp;
+
+/// Create a copy of TokenModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$TokenModelCopyWith<_TokenModel> get copyWith => __$TokenModelCopyWithImpl<_TokenModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$TokenModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TokenModel&&(identical(other.sub, sub) || other.sub == sub)&&(identical(other.exp, exp) || other.exp == exp));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,sub,exp);
+
+@override
+String toString() {
+  return 'TokenModel(sub: $sub, exp: $exp)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$TokenModelCopyWith<$Res> implements $TokenModelCopyWith<$Res> {
+  factory _$TokenModelCopyWith(_TokenModel value, $Res Function(_TokenModel) _then) = __$TokenModelCopyWithImpl;
+@override @useResult
+$Res call({
+ String sub, int exp
+});
+
+
+
+
+}
+/// @nodoc
+class __$TokenModelCopyWithImpl<$Res>
+    implements _$TokenModelCopyWith<$Res> {
+  __$TokenModelCopyWithImpl(this._self, this._then);
+
+  final _TokenModel _self;
+  final $Res Function(_TokenModel) _then;
+
+/// Create a copy of TokenModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? sub = null,Object? exp = null,}) {
+  return _then(_TokenModel(
+sub: null == sub ? _self.sub : sub // ignore: cast_nullable_to_non_nullable
+as String,exp: null == exp ? _self.exp : exp // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
 // dart format on

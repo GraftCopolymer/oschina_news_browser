@@ -36,10 +36,9 @@ def oschina(path: StrictStr) -> StrictStr:
     return f'{get_settings().OSCHINA_BASE}{path}'
 
 # expires_in: 过期时间(s)
-def create_app_jwt(user_id: int, expires_in: float = get_settings().ACCESS_TOKEN_EXPIRE_DAYS * 24 * 60 * 60) -> StrictStr:
+def create_app_jwt(user_id: int, expire_stamp: int) -> StrictStr:
     """生成自定义 App JWT"""
-    expire = datetime.utcnow() + timedelta(seconds=expires_in)
-    to_encode = {"sub": f'{user_id}', "exp": expire}
+    to_encode = {"sub": f'{user_id}', "exp": expire_stamp}
     encoded_jwt = jwt.encode(to_encode, get_settings().SECRET_KEY, algorithm= get_settings().JWT_ALGORITHM)
     return encoded_jwt
 

@@ -44,3 +44,15 @@ abstract class NewsDetail with _$NewsDetail {
 
   factory NewsDetail.fromJson(Map<String, Object?> json) => _$NewsDetailFromJson(json);
 }
+
+@freezed
+abstract class TokenModel with _$TokenModel {
+  const factory TokenModel({
+    // 用户 ID
+    required String sub,
+    // 过期时间戳
+    required int exp,
+  }) = _TokenModel;
+
+  factory TokenModel.fromJson(Map<String, Object?> json) => _$TokenModelFromJson(json);
+}

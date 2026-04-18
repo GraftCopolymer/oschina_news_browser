@@ -59,3 +59,9 @@ Map<String, dynamic> _$NewsDetailToJson(_NewsDetail instance) =>
       'title': instance.title,
       'authorid': instance.authorid,
     };
+
+_TokenModel _$TokenModelFromJson(Map<String, dynamic> json) =>
+    _TokenModel(sub: json['sub'] as String, exp: (json['exp'] as num).toInt());
+
+Map<String, dynamic> _$TokenModelToJson(_TokenModel instance) =>
+    <String, dynamic>{'sub': instance.sub, 'exp': instance.exp};
