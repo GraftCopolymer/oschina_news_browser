@@ -36,6 +36,7 @@ async def get_token_BearerAuth(credentials: HTTPAuthorizationCredentials = Depen
     """
     token_str = credentials.credentials
     try:
+        # 注意这里会自动验证过期, 若过期会抛出异常
         payload = jwt.decode(token_str, get_settings().SECRET_KEY, [get_settings().JWT_ALGORITHM])
         token_model = TokenModel(sub=payload.get('sub'), raw_token=token_str)
         # 存入上下文变量

@@ -77,7 +77,7 @@ def get_current_token_model() -> TokenModel:
 async def get_current_user() -> User:
     token_model = get_current_token_model()
     # 从 Redis 中寻找用户信息
-    oschina_token_string: Optional[StrictStr] = redis_client.get(token_model.raw_token)
+    oschina_token_string: Optional[StrictStr] = redis_client.get(token_model.sub)
     user_uid = int(token_model.sub)
     user: Optional[User] = None
     if oschina_token_string: # Redis中有缓存

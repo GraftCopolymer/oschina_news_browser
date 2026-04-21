@@ -49,17 +49,15 @@ class DefaultApiImpl(BaseDefaultApi):
                 oschina_refresh_token=refresh_token
             )
             with SessionLocal() as db:
-                db_user_ = db.query(DBUser).filter(DBUser.id == db_user.id).first()
-                if not db_user_: # 用户不存在才添加, 存在则修改对应的字段
-                    db.merge(db_user)
-                    try:
-                        db.commit()
-                    except Exception as e:
-                        print(e)
-                        raise HTTPException(status_code=500, detail="用户注册失败")
+                db.merge(db_user)
+                try:
+                    db.commit()
+                except Exception as e:
+                    print(e)
+                    raise HTTPException(status_code=500, detail="用户注册失败")
 
             # 保存到 Redis
-            redis_client.set(jwt, json.dumps({
+            redis_client.set(user_uid, json.dumps({
                 'token': token,
                 'refresh_token': refresh_token
             }))
@@ -89,8 +87,6 @@ class DefaultApiImpl(BaseDefaultApi):
             url = oschina("/action/openapi/news_list")
             custom_headers = {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                "Referer": "https://www.oschina.net/",
-                "Accept": "application/json"
             }
             resp = await client.post(url, data={
                 'access_token': user.oschina_token,
