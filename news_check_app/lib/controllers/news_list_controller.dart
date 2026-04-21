@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:news_check_app/controllers/auth_controller.dart';
 import 'package:news_check_app/main.dart';
@@ -17,6 +18,8 @@ class NewsListController extends GetxController {
     isLoading = true;
     try {
       await _load();
+    } on DioException catch(e) {
+      rethrow;
     } finally {
       isLoading = false;
     }

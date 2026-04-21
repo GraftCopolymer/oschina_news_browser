@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
-import 'package:get/utils.dart';
-import 'package:news_check_app/controllers/auth_controller.dart';
 import 'package:news_check_app/pages/oschina_login_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -13,7 +10,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,7 @@
 # 自定义
 # 包含SECRET_KEY等敏感信息, 不上传仓库
 .env
+/data.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

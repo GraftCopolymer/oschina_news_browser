@@ -1,9 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/instance_manager.dart';
 import 'package:news_check_app/controllers/news_list_controller.dart';
-import 'package:news_check_app/models/models.dart';
 import 'package:news_check_app/pages/news_detail_page.dart';
 import 'package:news_check_app/utils/store_keys.dart';
 import 'package:news_check_app/utils/store_utils.dart';
@@ -19,7 +20,6 @@ class HomeTab extends StatefulWidget {
 
 class _HomeTabState extends State<HomeTab> with AutomaticKeepAliveClientMixin {
   final _newsListController = Get.put(NewsListController());
-  final List<NewsSimple> _newsItems = [];
 
   Future<void> _test() async {
     final token = await StoreUtils.secure.read(key: StoreKeys.TOKEN); 
@@ -31,7 +31,17 @@ class _HomeTabState extends State<HomeTab> with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     super.initState();
-    _newsListController.loadMore();
+    _newsListController.loadMore().onError((e, _) {
+      if (e is DioException) {
+        if (e.response?.statusCode == 401)  {
+          Fluttertoast.showToast(msg: "登录过期, 请重新登录");
+        } else {
+          Fluttertoast.showToast(msg: "未知错误");
+        }
+      } else {
+        Fluttertoast.showToast(msg: "未知错误");
+      }
+    });
     _test();
   }
 

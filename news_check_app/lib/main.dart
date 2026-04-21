@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:news_check_app/controllers/auth_controller.dart';
+import 'package:news_check_app/network/token_interceptor.dart';
 import 'package:news_check_app/pages/account_page.dart';
 import 'package:news_check_app/pages/login_page.dart';
 import 'package:news_check_app/pages/news_tab_page.dart';
@@ -13,8 +14,16 @@ import 'package:openapi/openapi.dart';
 late final DefaultApi api;
 
 void _initApi() {
-  final dio = Dio();
-  api = Openapi(basePathOverride: "http://10.0.2.2:8000").getDefaultApi();
+  final dio = Dio(
+    BaseOptions(
+      baseUrl: "http://10.0.2.2:8000",
+    ),
+  );
+
+  dio.interceptors.add(TokenInterceptor());
+  api = Openapi(
+    dio: dio,
+  ).getDefaultApi();
 }
 
 Future<void> main() async {
@@ -28,7 +37,7 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key,});
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -37,7 +46,9 @@ class MyApp extends StatelessWidget {
       title: "开发者资讯",
       theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
       home: Obx(() {
-        return Get.find<AuthController>().isLoggedIn.value ? AppFrame() : LoginPage();
+        return Get.find<AuthController>().isLoggedIn.value
+            ? AppFrame()
+            : LoginPage();
       }),
     );
   }
@@ -53,19 +64,13 @@ class AppFrame extends StatefulWidget {
 class _AppFrameState extends State<AppFrame>
     with SingleTickerProviderStateMixin {
   // 新闻浏览页和个人中心页面
-  final List<Widget> _pages = [
-    NewsTabPage(),
-    AccountPage(),
-  ];
+  final List<Widget> _pages = [NewsTabPage(), AccountPage()];
   int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
-      ),
+      body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: MyNavigationBar(
         onPageChanged: (oldIndex, newIndex) {
           setState(() {
@@ -74,7 +79,7 @@ class _AppFrameState extends State<AppFrame>
         },
         tabs: [
           MyNavigationBarItem(
-            icon: Icon(Icons.home_outlined, size: 40,),
+            icon: Icon(Icons.home_outlined, size: 40),
             activeIcon: Icon(Icons.home, size: 40),
           ),
           MyNavigationBarItem(
