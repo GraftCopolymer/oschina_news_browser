@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:news_check_app/pages/blog_tab.dart';
 import 'package:news_check_app/pages/news_tab.dart';
+import 'package:news_check_app/widgets/home_header.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({super.key});
@@ -13,32 +14,57 @@ class _NewsPageState extends State<NewsPage>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
-  // Tab 页面
-  final _tabPages = [NewsTab(), BlogTab(), NewsTab()];
+  final _tabPages = const [NewsTab(), BlogTab()];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(
-        // 取消 toolbarHeight
-        toolbarHeight: 0,
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorWeight: 3,
-          tabs: [
-            Tab(text: "新闻", icon: Icon(Icons.newspaper)),
-            Tab(text: "博客", icon: Icon(Icons.fire_extinguisher)),
-            Tab(text: "最新", icon: Icon(Icons.nat)),
-          ],
-        ),
+      body: Column(
+        children: [
+          const HomeHeader(),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest.withAlpha(60),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              indicator: BoxDecoration(
+                color: colorScheme.primary,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              indicatorSize: TabBarIndicatorSize.tab,
+              dividerColor: Colors.transparent,
+              labelColor: Colors.white,
+              unselectedLabelColor: colorScheme.onSurface.withAlpha(150),
+              labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              unselectedLabelStyle: const TextStyle(fontSize: 14),
+              tabs: const [
+                Tab(text: "新闻"),
+                Tab(text: "博客"),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: TabBarView(controller: _tabController, children: _tabPages),
+          ),
+        ],
       ),
-      body: TabBarView(controller: _tabController, children: _tabPages),
     );
   }
 }
