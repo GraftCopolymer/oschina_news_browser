@@ -3,6 +3,7 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:get/instance_manager.dart';
 import 'package:news_check_app/controllers/auth_controller.dart';
+import 'package:news_check_app/pages/about_page.dart';
 import 'package:news_check_app/pages/login_page.dart';
 import 'package:news_check_app/pages/settings_page.dart';
 import 'package:news_check_app/theme/app_colors.dart';
@@ -178,7 +179,9 @@ class _AccountPageState extends State<AccountPage> {
                     Get.to(() => const SettingsPage());
                   }),
                   const Divider(height: 1, indent: 56),
-                  _listTile(Icons.info_outline, "关于", () {}),
+                  _listTile(Icons.info_outline, "关于", () {
+                  Get.to(() => const AboutPage());
+                }),
                 ],
               ),
             ),
