@@ -21,46 +21,44 @@ class MyNavigationBar extends StatefulWidget {
 class _MyNavigationBarState extends State<MyNavigationBar> {
   late int _currentIndex;
 
-  Widget _buildIndicator() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30.0),
-      child: Container(height: 2, color: Theme.of(context).colorScheme.primary),
-    );
-  }
-
   List<Widget> _buildTabEntry() {
     List<Widget> result = [];
     for (int i = 0; i < widget.tabs.length; i++) {
+      final isSelected = _currentIndex == i;
       result.add(
         Expanded(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SizedBox(
-                height: constraints.maxHeight,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    widget.onPageChanged(_currentIndex, i);
-                    setState(() {
-                      _currentIndex = i;
-                    });
-                  },
-                  child: _currentIndex == i
-                      ? Stack(
-                          children: [
-                            Center(child: widget.tabs[i].activeIcon),
-                            Positioned(
-                              left: 0,
-                              right: 0,
-                              bottom: 0,
-                              child: _buildIndicator(),
-                            ),
-                          ],
-                        )
-                      : widget.tabs[i].icon,
-                ),
-              );
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              widget.onPageChanged(_currentIndex, i);
+              setState(() {
+                _currentIndex = i;
+              });
             },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                isSelected
+                    ? widget.tabs[i].activeIcon
+                    : widget.tabs[i].icon,
+                if (widget.tabs[i].label != null) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    widget.tabs[i].label!,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.primary
+                          : Colors.grey,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ),
         ),
       );
@@ -78,7 +76,7 @@ class _MyNavigationBarState extends State<MyNavigationBar> {
   Widget build(BuildContext context) {
     final paddingBottom = MediaQuery.of(context).padding.bottom;
     return Container(
-      height: 80,
+      height: 64,
       width: double.infinity,
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -103,8 +101,9 @@ class _MyNavigationBarState extends State<MyNavigationBar> {
 }
 
 class MyNavigationBarItem {
-  MyNavigationBarItem({required this.icon, required this.activeIcon});
+  MyNavigationBarItem({required this.icon, required this.activeIcon, this.label});
 
   final Widget icon;
   final Widget activeIcon;
+  final String? label;
 }

@@ -10,6 +10,7 @@ import 'package:news_check_app/pages/home_page.dart';
 import 'package:news_check_app/pages/search_page.dart';
 import 'package:news_check_app/services/api_client.dart';
 import 'package:news_check_app/utils/store_utils.dart';
+import 'package:news_check_app/theme/app_theme.dart';
 import 'package:news_check_app/widgets/bottom_navigation_bar.dart';
 
 // 使用本地服务器进行测试
@@ -43,8 +44,8 @@ class MyApp extends StatelessWidget {
     return Obx(() {
       return GetMaterialApp(
         title: "开发者资讯",
-        theme: ThemeData.light(),
-        darkTheme: ThemeData.dark(),
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
         themeMode: Get.find<AppSettingsController>().themeMode.value
             .toFlutterThemeMode(),
         home: Obx(() {
@@ -82,16 +83,19 @@ class _AppFrameState extends State<AppFrame>
         },
         tabs: [
           MyNavigationBarItem(
-            icon: Icon(Icons.home_outlined, size: 40),
-            activeIcon: Icon(Icons.home, size: 40),
+            icon: Icon(Icons.home_outlined, size: 28),
+            activeIcon: Icon(Icons.home, size: 28),
+            label: "首页",
           ),
           MyNavigationBarItem(
-            icon: Icon(Icons.search_outlined, size: 40),
-            activeIcon: Icon(Icons.search, size: 40),
+            icon: Icon(Icons.search_outlined, size: 28),
+            activeIcon: Icon(Icons.search, size: 28),
+            label: "搜索",
           ),
           MyNavigationBarItem(
-            icon: Icon(Icons.account_circle_outlined, size: 40),
-            activeIcon: Icon(Icons.account_circle_rounded, size: 40),
+            icon: Icon(Icons.account_circle_outlined, size: 28),
+            activeIcon: Icon(Icons.account_circle_rounded, size: 28),
+            label: "我的",
           ),
         ],
       ),
