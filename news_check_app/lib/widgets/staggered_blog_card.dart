@@ -26,6 +26,17 @@ class StaggeredBlogCard extends StatelessWidget {
         ? AppColors.cardGradientDarkForType(blog.type)
         : AppColors.cardGradientForType(blog.type);
 
+    // 根据渐变亮度决定文字颜色 — 浅色背景用深色文字
+    final textColor = colors.first.computeLuminance() > 0.5
+        ? Colors.black87
+        : Colors.white;
+    final textColorSecondary = colors.first.computeLuminance() > 0.5
+        ? Colors.black54
+        : Colors.white70;
+    final textColorTertiary = colors.first.computeLuminance() > 0.5
+        ? Colors.black45
+        : Colors.white60;
+
     return GestureDetector(
       onTap: () => onTap?.call(blog),
       child: Container(
@@ -53,13 +64,13 @@ class StaggeredBlogCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: Colors.white.withAlpha(50),
+                color: textColor.withAlpha(30),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
                 _blogTypeLabel(blog.type),
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: textColor,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                 ),
@@ -70,8 +81,8 @@ class StaggeredBlogCard extends StatelessWidget {
             Expanded(
               child: Text(
                 blog.title,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: textColor,
                   fontSize: 17,
                   fontWeight: FontWeight.bold,
                 ),
@@ -82,16 +93,16 @@ class StaggeredBlogCard extends StatelessWidget {
             // 底部信息
             Row(
               children: [
-                const Icon(Icons.chat_bubble_outline, size: 12, color: Colors.white70),
+                Icon(Icons.chat_bubble_outline, size: 12, color: textColorSecondary),
                 const SizedBox(width: 4),
                 Text(
                   '${blog.commentCount}',
-                  style: const TextStyle(color: Colors.white70, fontSize: 12),
+                  style: TextStyle(color: textColorSecondary, fontSize: 12),
                 ),
                 const Spacer(),
                 Text(
                   blog.author,
-                  style: const TextStyle(color: Colors.white60, fontSize: 11),
+                  style: TextStyle(color: textColorTertiary, fontSize: 11),
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
@@ -99,7 +110,7 @@ class StaggeredBlogCard extends StatelessWidget {
             const SizedBox(height: 2),
             Text(
               blog.pubDate,
-              style: const TextStyle(color: Colors.white60, fontSize: 10),
+              style: TextStyle(color: textColorTertiary, fontSize: 10),
             ),
           ],
         ),
