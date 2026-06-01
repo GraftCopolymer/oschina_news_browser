@@ -25,20 +25,13 @@ class SearchHistoryController extends GetxController with FutureLoadMixin {
   }
 
   Future<void> addHistory(String content) async {
-    // 先检查有无相同的搜索记录
-    bool alreadyHas = false;
-    int index = 0;
-    for (; index < history.length; index++) {
-      if (history[index] == content) {
-        alreadyHas = true;
-        break;
-      }
-    }
-    if (alreadyHas) {
-      history.removeAt(index);
-    }
+    // 如果已存在则删除旧记录（保证不重复）
+    history.remove(content);
+    // 插入到最前面
     history.insert(0, content);
     history.refresh();
+    // 持久化到本地存储
+    await StoreUtils.pref.setStringList(StoreKeys.SEARCH_HISTORY, history.toList());
   }
 
   @override
