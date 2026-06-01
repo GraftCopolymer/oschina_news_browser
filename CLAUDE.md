@@ -135,6 +135,10 @@ flutter run
 - **持久化**: `StoreUtils.pref`（SharedPreferences）+ `StoreUtils.secure`（Keychain/EncryptedSharedPreferences）
 - **数据模型**: `models/models.dart` 用 `freezed` 定义，JSON 序列化通过 `fromJson`/`toJson`
 
+## UI 风格参考
+
+- **UI 设计规范**: `news_check_app/UI.md` — 包含配色系统、字体排版、组件规范、页面布局等完整 UI 设计指南。**在对前端 UI 进行任何修改或扩展前，请先阅读此文件**，确保新增组件与现有风格一致。
+
 ## 收藏管理
 
 收藏功能在服务端未完全实现（缺少数据库收藏表），前端当前也未调用收藏 API。三个 endpoint 返回桩响应。
