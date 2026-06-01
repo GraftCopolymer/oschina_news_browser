@@ -9,6 +9,7 @@ import 'package:news_check_app/models/models.dart';
 import 'package:news_check_app/pages/common_detail_markdown.dart';
 import 'package:news_check_app/pages/common_detail_webview.dart';
 import 'package:news_check_app/utils/passage_utils.dart';
+import 'package:news_check_app/widgets/shimmer_loading.dart';
 
 class BlogDetailPage extends StatefulWidget {
   const BlogDetailPage({super.key, required this.blogId});
@@ -70,18 +71,22 @@ class _BlogDetailPageState extends State<BlogDetailPage>
 
   Widget _buildBody() {
     if (_loading) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: ShimmerCard());
     } else if (_detail == null) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text("加载失败"),
-            TextButton(
-              onPressed: () {
-                _initData();
-              },
-              child: Text("重试"),
+            const Icon(Icons.error_outline, size: 48, color: Colors.grey),
+            const SizedBox(height: 12),
+            const Text("加载失败"),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _initData,
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(120, 40),
+              ),
+              child: const Text("重试"),
             ),
           ],
         ),
