@@ -12,121 +12,125 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   final _textController = TextEditingController();
+  final _focusNode = FocusNode();
 
   final List<String> _catalogs = ["新闻", "博客", "项目"];
   int _selectedCatalogIndex = 0;
+  bool _showHistory = false;
 
-  Widget _buildSearchCatalogItem(
-    String text,
-    void Function() onTap,
-    bool isSelected,
-  ) {
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        border: isSelected
-            ? Border.all(
-                color: Theme.of(context).colorScheme.primary,
-                width: 2.0,
-              )
-            : Border.all(
-                color: Theme.of(context).colorScheme.primary.withAlpha(100),
-                width: 2.0,
-              ),
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      child: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(18.0),
-            child: Center(child: Text(text, style: TextStyle(fontSize: 16.0))),
-          ),
-          Positioned.fill(
-            child: Material(
-              color: isSelected
-                  ? Theme.of(context).colorScheme.primary.withAlpha(100)
-                  : Colors.transparent,
-              child: InkWell(
-                onTap: onTap,
-                splashColor: Theme.of(
-                  context,
-                ).colorScheme.primary.withAlpha(60),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      setState(() {
+        _showHistory = _focusNode.hasFocus;
+      });
+    });
   }
 
-  List<Widget> _buildCatalogItemList() {
-    List<Widget> result = [];
-    for (int i = 0; i < _catalogs.length; i++) {
-      result.add(
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: _buildSearchCatalogItem(_catalogs[i], () {
-              setState(() {
-                _selectedCatalogIndex = i;
-              });
-            }, _selectedCatalogIndex == i),
-          ),
-        ),
-      );
-    }
-    return result;
+  @override
+  void dispose() {
+    _textController.dispose();
+    _focusNode.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
+      appBar: AppBar(title: const Text("搜索")),
       body: GetBuilder(
         init: SearchHistoryController(),
         builder: (controller) {
           return Column(
             children: [
-              SizedBox(height: kToolbarHeight),
+              // 搜索框
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _textController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0),
-                          ),
-                          hintText: "搜索${_catalogs[_selectedCatalogIndex]}",
-                        ),
-                      ),
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                child: TextField(
+                  controller: _textController,
+                  focusNode: _focusNode,
+                  decoration: InputDecoration(
+                    hintText: "搜索${_catalogs[_selectedCatalogIndex]}",
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _textController.text.isNotEmpty
+                        ? IconButton(
+                            onPressed: () {
+                              _textController.clear();
+                              setState(() {});
+                            },
+                            icon: const Icon(Icons.clear),
+                          )
+                        : null,
+                    filled: true,
+                    fillColor: colorScheme.surfaceContainerHighest.withAlpha(80),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
                     ),
-                    IconButton(
-                      onPressed: () {
-                        // 添加到搜索记录
-                        if (_textController.text.isNotEmpty) {
-                          controller.addHistory(_textController.text);
-                        }
-                      },
-                      icon: Icon(Icons.search),
-                    ),
-                  ],
+                  ),
+                  onChanged: (_) => setState(() {}),
+                  onSubmitted: (value) {
+                    if (value.isNotEmpty) {
+                      controller.addHistory(value);
+                    }
+                  },
                 ),
               ),
-              SizedBox(height: 10.0),
+              // 目录选择 ChoiceChip
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Row(children: _buildCatalogItemList()),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: List.generate(_catalogs.length, (i) {
+                    final isSelected = _selectedCatalogIndex == i;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ChoiceChip(
+                        label: Text(_catalogs[i]),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          if (selected) {
+                            setState(() {
+                              _selectedCatalogIndex = i;
+                            });
+                          }
+                        },
+                      ),
+                    );
+                  }),
+                ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Row(children: [Text("搜索记录")]),
-              ),
-              // 搜索历史记录
-              SearchHistoryWidget(controller: controller, onHistoryClick: (content) {
-                debugPrint("点击了搜索历史记录: $content");
-              },),
+              const SizedBox(height: 8),
+              // 搜索历史
+              if (_showHistory || controller.history.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      Text(
+                        "搜索记录",
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                      const Spacer(),
+                      if (controller.history.isNotEmpty)
+                        TextButton(
+                          onPressed: () => controller.clearHistory(),
+                          child: const Text("清除全部"),
+                        ),
+                    ],
+                  ),
+                ),
+              if (_showHistory)
+                Expanded(
+                  child: SearchHistoryWidget(
+                    controller: controller,
+                    onHistoryClick: (content) {
+                      _textController.text = content;
+                      debugPrint("点击搜索历史: $content");
+                    },
+                  ),
+                ),
             ],
           );
         },

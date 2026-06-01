@@ -12,6 +12,18 @@ class SearchHistoryController extends GetxController with FutureLoadMixin {
     history.refresh();
   }
 
+  Future<void> removeHistory(String content) async {
+    history.remove(content);
+    history.refresh();
+    await StoreUtils.pref.setStringList(StoreKeys.SEARCH_HISTORY, history.toList());
+  }
+
+  Future<void> clearHistory() async {
+    history.clear();
+    history.refresh();
+    await StoreUtils.pref.setStringList(StoreKeys.SEARCH_HISTORY, []);
+  }
+
   Future<void> addHistory(String content) async {
     // 先检查有无相同的搜索记录
     bool alreadyHas = false;

@@ -18,9 +18,20 @@ class _SearchHistoryWidgetState extends State<SearchHistoryWidget> {
   List<Widget> _buildHistoryChildren() {
     List<Widget> result = [];
     for (final history in widget.controller.history) {
-      result.add(GestureDetector(onTap: () {
-        widget.onHistoryClick(history);
-      }, child: Chip(label: Text(history))));
+      result.add(
+        GestureDetector(
+          onTap: () {
+            widget.onHistoryClick(history);
+          },
+          child: Chip(
+            label: Text(history),
+            deleteIcon: const Icon(Icons.close, size: 16),
+            onDeleted: () {
+              widget.controller.removeHistory(history);
+            },
+          ),
+        ),
+      );
     }
     return result;
   }
