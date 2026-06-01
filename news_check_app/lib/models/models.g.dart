@@ -60,6 +60,46 @@ Map<String, dynamic> _$NewsDetailToJson(_NewsDetail instance) =>
       'authorid': instance.authorid,
     };
 
+_BlogSimple _$BlogSimpleFromJson(Map<String, dynamic> json) => _BlogSimple(
+  id: (json['id'] as num).toInt(),
+  author: json['author'] as String,
+  pubDate: json['pubDate'] as String,
+  title: json['title'] as String,
+  authorid: (json['authorid'] as num).toInt(),
+  commentCount: (json['commentCount'] as num).toInt(),
+  type: (json['type'] as num).toInt(),
+);
+
+Map<String, dynamic> _$BlogSimpleToJson(_BlogSimple instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'author': instance.author,
+      'pubDate': instance.pubDate,
+      'title': instance.title,
+      'authorid': instance.authorid,
+      'commentCount': instance.commentCount,
+      'type': instance.type,
+    };
+
+_BlogDetail _$BlogDetailFromJson(Map<String, dynamic> json) => _BlogDetail(
+  id: (json['id'] as num).toInt(),
+  body: json['body'] as String,
+  pubDate: json['pubDate'] as String,
+  author: json['author'] as String,
+  title: json['title'] as String,
+  authorid: (json['authorid'] as num).toInt(),
+);
+
+Map<String, dynamic> _$BlogDetailToJson(_BlogDetail instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'body': instance.body,
+      'pubDate': instance.pubDate,
+      'author': instance.author,
+      'title': instance.title,
+      'authorid': instance.authorid,
+    };
+
 _TokenModel _$TokenModelFromJson(Map<String, dynamic> json) =>
     _TokenModel(sub: json['sub'] as String, exp: (json['exp'] as num).toInt());
 

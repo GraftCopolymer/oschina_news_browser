@@ -10,7 +10,7 @@ from openapi_server.config.config import get_settings
 from openapi_server.context import current_token
 from openapi_server.database.database import SessionLocal
 from openapi_server.database.models import DBUser
-from openapi_server.impl.default_api_impl import redis_client
+from openapi_server.database.redis import redis_client
 from openapi_server.models.api_response import ApiResponse
 from openapi_server.models.extra_models import TokenModel, User
 

@@ -42,3 +42,20 @@ class NewsDetail(BaseModel):
     author: str
     title: str
     authorid: int
+
+class BlogSimple(BaseModel):
+    id: int
+    author: str
+    pubDate: str
+    title: str
+    authorid: int
+    commentCount: int
+    type: int
+
+class BlogDetail(BaseModel):
+    id: int
+    body: str
+    pubDate: str
+    author: str
+    title: str
+    authorid: int

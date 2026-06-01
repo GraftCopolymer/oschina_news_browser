@@ -844,6 +844,565 @@ as int,
 
 
 /// @nodoc
+mixin _$BlogSimple {
+
+ int get id; String get author; String get pubDate; String get title; int get authorid; int get commentCount; int get type;
+/// Create a copy of BlogSimple
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$BlogSimpleCopyWith<BlogSimple> get copyWith => _$BlogSimpleCopyWithImpl<BlogSimple>(this as BlogSimple, _$identity);
+
+  /// Serializes this BlogSimple to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BlogSimple&&(identical(other.id, id) || other.id == id)&&(identical(other.author, author) || other.author == author)&&(identical(other.pubDate, pubDate) || other.pubDate == pubDate)&&(identical(other.title, title) || other.title == title)&&(identical(other.authorid, authorid) || other.authorid == authorid)&&(identical(other.commentCount, commentCount) || other.commentCount == commentCount)&&(identical(other.type, type) || other.type == type));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,author,pubDate,title,authorid,commentCount,type);
+
+@override
+String toString() {
+  return 'BlogSimple(id: $id, author: $author, pubDate: $pubDate, title: $title, authorid: $authorid, commentCount: $commentCount, type: $type)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $BlogSimpleCopyWith<$Res>  {
+  factory $BlogSimpleCopyWith(BlogSimple value, $Res Function(BlogSimple) _then) = _$BlogSimpleCopyWithImpl;
+@useResult
+$Res call({
+ int id, String author, String pubDate, String title, int authorid, int commentCount, int type
+});
+
+
+
+
+}
+/// @nodoc
+class _$BlogSimpleCopyWithImpl<$Res>
+    implements $BlogSimpleCopyWith<$Res> {
+  _$BlogSimpleCopyWithImpl(this._self, this._then);
+
+  final BlogSimple _self;
+  final $Res Function(BlogSimple) _then;
+
+/// Create a copy of BlogSimple
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? author = null,Object? pubDate = null,Object? title = null,Object? authorid = null,Object? commentCount = null,Object? type = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,author: null == author ? _self.author : author // ignore: cast_nullable_to_non_nullable
+as String,pubDate: null == pubDate ? _self.pubDate : pubDate // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,authorid: null == authorid ? _self.authorid : authorid // ignore: cast_nullable_to_non_nullable
+as int,commentCount: null == commentCount ? _self.commentCount : commentCount // ignore: cast_nullable_to_non_nullable
+as int,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [BlogSimple].
+extension BlogSimplePatterns on BlogSimple {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _BlogSimple value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _BlogSimple() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _BlogSimple value)  $default,){
+final _that = this;
+switch (_that) {
+case _BlogSimple():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _BlogSimple value)?  $default,){
+final _that = this;
+switch (_that) {
+case _BlogSimple() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String author,  String pubDate,  String title,  int authorid,  int commentCount,  int type)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _BlogSimple() when $default != null:
+return $default(_that.id,_that.author,_that.pubDate,_that.title,_that.authorid,_that.commentCount,_that.type);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String author,  String pubDate,  String title,  int authorid,  int commentCount,  int type)  $default,) {final _that = this;
+switch (_that) {
+case _BlogSimple():
+return $default(_that.id,_that.author,_that.pubDate,_that.title,_that.authorid,_that.commentCount,_that.type);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String author,  String pubDate,  String title,  int authorid,  int commentCount,  int type)?  $default,) {final _that = this;
+switch (_that) {
+case _BlogSimple() when $default != null:
+return $default(_that.id,_that.author,_that.pubDate,_that.title,_that.authorid,_that.commentCount,_that.type);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _BlogSimple implements BlogSimple {
+  const _BlogSimple({required this.id, required this.author, required this.pubDate, required this.title, required this.authorid, required this.commentCount, required this.type});
+  factory _BlogSimple.fromJson(Map<String, dynamic> json) => _$BlogSimpleFromJson(json);
+
+@override final  int id;
+@override final  String author;
+@override final  String pubDate;
+@override final  String title;
+@override final  int authorid;
+@override final  int commentCount;
+@override final  int type;
+
+/// Create a copy of BlogSimple
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$BlogSimpleCopyWith<_BlogSimple> get copyWith => __$BlogSimpleCopyWithImpl<_BlogSimple>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$BlogSimpleToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BlogSimple&&(identical(other.id, id) || other.id == id)&&(identical(other.author, author) || other.author == author)&&(identical(other.pubDate, pubDate) || other.pubDate == pubDate)&&(identical(other.title, title) || other.title == title)&&(identical(other.authorid, authorid) || other.authorid == authorid)&&(identical(other.commentCount, commentCount) || other.commentCount == commentCount)&&(identical(other.type, type) || other.type == type));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,author,pubDate,title,authorid,commentCount,type);
+
+@override
+String toString() {
+  return 'BlogSimple(id: $id, author: $author, pubDate: $pubDate, title: $title, authorid: $authorid, commentCount: $commentCount, type: $type)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$BlogSimpleCopyWith<$Res> implements $BlogSimpleCopyWith<$Res> {
+  factory _$BlogSimpleCopyWith(_BlogSimple value, $Res Function(_BlogSimple) _then) = __$BlogSimpleCopyWithImpl;
+@override @useResult
+$Res call({
+ int id, String author, String pubDate, String title, int authorid, int commentCount, int type
+});
+
+
+
+
+}
+/// @nodoc
+class __$BlogSimpleCopyWithImpl<$Res>
+    implements _$BlogSimpleCopyWith<$Res> {
+  __$BlogSimpleCopyWithImpl(this._self, this._then);
+
+  final _BlogSimple _self;
+  final $Res Function(_BlogSimple) _then;
+
+/// Create a copy of BlogSimple
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? author = null,Object? pubDate = null,Object? title = null,Object? authorid = null,Object? commentCount = null,Object? type = null,}) {
+  return _then(_BlogSimple(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,author: null == author ? _self.author : author // ignore: cast_nullable_to_non_nullable
+as String,pubDate: null == pubDate ? _self.pubDate : pubDate // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,authorid: null == authorid ? _self.authorid : authorid // ignore: cast_nullable_to_non_nullable
+as int,commentCount: null == commentCount ? _self.commentCount : commentCount // ignore: cast_nullable_to_non_nullable
+as int,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$BlogDetail {
+
+ int get id; String get body; String get pubDate; String get author; String get title; int get authorid;
+/// Create a copy of BlogDetail
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$BlogDetailCopyWith<BlogDetail> get copyWith => _$BlogDetailCopyWithImpl<BlogDetail>(this as BlogDetail, _$identity);
+
+  /// Serializes this BlogDetail to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BlogDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.body, body) || other.body == body)&&(identical(other.pubDate, pubDate) || other.pubDate == pubDate)&&(identical(other.author, author) || other.author == author)&&(identical(other.title, title) || other.title == title)&&(identical(other.authorid, authorid) || other.authorid == authorid));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,body,pubDate,author,title,authorid);
+
+@override
+String toString() {
+  return 'BlogDetail(id: $id, body: $body, pubDate: $pubDate, author: $author, title: $title, authorid: $authorid)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $BlogDetailCopyWith<$Res>  {
+  factory $BlogDetailCopyWith(BlogDetail value, $Res Function(BlogDetail) _then) = _$BlogDetailCopyWithImpl;
+@useResult
+$Res call({
+ int id, String body, String pubDate, String author, String title, int authorid
+});
+
+
+
+
+}
+/// @nodoc
+class _$BlogDetailCopyWithImpl<$Res>
+    implements $BlogDetailCopyWith<$Res> {
+  _$BlogDetailCopyWithImpl(this._self, this._then);
+
+  final BlogDetail _self;
+  final $Res Function(BlogDetail) _then;
+
+/// Create a copy of BlogDetail
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? body = null,Object? pubDate = null,Object? author = null,Object? title = null,Object? authorid = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,body: null == body ? _self.body : body // ignore: cast_nullable_to_non_nullable
+as String,pubDate: null == pubDate ? _self.pubDate : pubDate // ignore: cast_nullable_to_non_nullable
+as String,author: null == author ? _self.author : author // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,authorid: null == authorid ? _self.authorid : authorid // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [BlogDetail].
+extension BlogDetailPatterns on BlogDetail {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _BlogDetail value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _BlogDetail() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _BlogDetail value)  $default,){
+final _that = this;
+switch (_that) {
+case _BlogDetail():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _BlogDetail value)?  $default,){
+final _that = this;
+switch (_that) {
+case _BlogDetail() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String body,  String pubDate,  String author,  String title,  int authorid)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _BlogDetail() when $default != null:
+return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that.authorid);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String body,  String pubDate,  String author,  String title,  int authorid)  $default,) {final _that = this;
+switch (_that) {
+case _BlogDetail():
+return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that.authorid);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String body,  String pubDate,  String author,  String title,  int authorid)?  $default,) {final _that = this;
+switch (_that) {
+case _BlogDetail() when $default != null:
+return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that.authorid);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _BlogDetail implements BlogDetail {
+  const _BlogDetail({required this.id, required this.body, required this.pubDate, required this.author, required this.title, required this.authorid});
+  factory _BlogDetail.fromJson(Map<String, dynamic> json) => _$BlogDetailFromJson(json);
+
+@override final  int id;
+@override final  String body;
+@override final  String pubDate;
+@override final  String author;
+@override final  String title;
+@override final  int authorid;
+
+/// Create a copy of BlogDetail
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$BlogDetailCopyWith<_BlogDetail> get copyWith => __$BlogDetailCopyWithImpl<_BlogDetail>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$BlogDetailToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BlogDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.body, body) || other.body == body)&&(identical(other.pubDate, pubDate) || other.pubDate == pubDate)&&(identical(other.author, author) || other.author == author)&&(identical(other.title, title) || other.title == title)&&(identical(other.authorid, authorid) || other.authorid == authorid));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,body,pubDate,author,title,authorid);
+
+@override
+String toString() {
+  return 'BlogDetail(id: $id, body: $body, pubDate: $pubDate, author: $author, title: $title, authorid: $authorid)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$BlogDetailCopyWith<$Res> implements $BlogDetailCopyWith<$Res> {
+  factory _$BlogDetailCopyWith(_BlogDetail value, $Res Function(_BlogDetail) _then) = __$BlogDetailCopyWithImpl;
+@override @useResult
+$Res call({
+ int id, String body, String pubDate, String author, String title, int authorid
+});
+
+
+
+
+}
+/// @nodoc
+class __$BlogDetailCopyWithImpl<$Res>
+    implements _$BlogDetailCopyWith<$Res> {
+  __$BlogDetailCopyWithImpl(this._self, this._then);
+
+  final _BlogDetail _self;
+  final $Res Function(_BlogDetail) _then;
+
+/// Create a copy of BlogDetail
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? body = null,Object? pubDate = null,Object? author = null,Object? title = null,Object? authorid = null,}) {
+  return _then(_BlogDetail(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,body: null == body ? _self.body : body // ignore: cast_nullable_to_non_nullable
+as String,pubDate: null == pubDate ? _self.pubDate : pubDate // ignore: cast_nullable_to_non_nullable
+as String,author: null == author ? _self.author : author // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,authorid: null == authorid ? _self.authorid : authorid // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
 mixin _$TokenModel {
 
 // 用户 ID

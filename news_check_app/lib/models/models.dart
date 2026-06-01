@@ -46,6 +46,39 @@ abstract class NewsDetail with _$NewsDetail {
 }
 
 @freezed
+abstract class BlogSimple with _$BlogSimple {
+  const factory BlogSimple({
+    required int id,
+    required String author,
+    required String pubDate,
+    required String title,
+    required int authorid,
+    required int commentCount,
+    required int type,
+    // 如果 Blog 需要额外字段，可以取消下方注释
+    // String? body,
+  }) = _BlogSimple;
+
+  factory BlogSimple.fromJson(Map<String, Object?> json) => _$BlogSimpleFromJson(json);
+}
+
+@freezed
+abstract class BlogDetail with _$BlogDetail {
+  const factory BlogDetail({
+    required int id,
+    required String body,
+    required String pubDate,
+    required String author,
+    required String title,
+    required int authorid,
+    // 提示：如果 Blog 接口返回了额外字段，例如评论数或分类，请在此添加：
+    // required int commentCount,
+  }) = _BlogDetail;
+
+  factory BlogDetail.fromJson(Map<String, Object?> json) => _$BlogDetailFromJson(json);
+}
+
+@freezed
 abstract class TokenModel with _$TokenModel {
   const factory TokenModel({
     // 用户 ID

@@ -5,4 +5,8 @@ class StoreKeys {
   static const TOKEN_EXPIRE_STAMP = "tokenExpireStamp";
 
   static const USER_INFO = "userInfo";
+
+  static const THEME_MODE = "themeMode";
+
+  static const SEARCH_HISTORY = "searchHistory";
 }

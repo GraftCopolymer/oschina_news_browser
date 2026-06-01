@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:news_check_app/main.dart';
+import 'package:news_check_app/mixins/future_load_mixin.dart';
 import 'package:news_check_app/models/models.dart';
 import 'package:news_check_app/utils/store_keys.dart';
 import 'package:news_check_app/utils/store_utils.dart';
@@ -12,7 +13,7 @@ import 'package:news_check_app/utils/store_utils.dart';
 enum UrlFetchStatus { loading, failed, success }
 enum LoginAppStatus { loading, failed, success }
 
-class AuthController extends GetxController {
+class AuthController extends GetxController with FutureLoadMixin {
   // 登录状态
   final isLoggedIn = false.obs;
   // 用户 token
@@ -31,16 +32,12 @@ class AuthController extends GetxController {
   final loginAppStatus = LoginAppStatus.loading.obs;
   String loginAppErrorMsg = "";
 
-  Completer? _loadingCompleter;
-  Future? get loadingFuture => _loadingCompleter?.future;
-
   @override
   void onInit() {
     super.onInit();
-    _loadingCompleter = Completer();
+    startLoad();
     loadLoginInfo().then((_) {
-      _loadingCompleter?.complete();
-      _loadingCompleter = null;
+      endLoad();
     });
   }
 
@@ -73,8 +70,12 @@ class AuthController extends GetxController {
     try {
       final resp = await api.authOschinaAuthorizeUrlGet();
       if (resp.statusCode == 200) {
-        authUrl.value = resp.data!.data!.asMap['auth_url'];
-        urlFetchStatus.value = UrlFetchStatus.success;
+        final body = resp.data as Map<String, dynamic>?;
+        final data = body?['data'] as Map<String, dynamic>?;
+        authUrl.value = data?['auth_url'] as String? ?? "";
+        urlFetchStatus.value = data?['auth_url'] != null
+            ? UrlFetchStatus.success
+            : UrlFetchStatus.failed;
       } else {
         authUrl.value = "";
         urlFetchStatus.value = UrlFetchStatus.failed;
@@ -91,17 +92,23 @@ class AuthController extends GetxController {
     loginAppStatus.value = LoginAppStatus.loading;
     try {
       final resp = await api.authOschinaCallbackGet(code: userCode);
-      final data = resp.data;
-      if (resp.statusCode != 200 || data == null) {
+      final body = resp.data as Map<String, dynamic>?;
+      if (resp.statusCode != 200 || body == null) {
         loginAppStatus.value = LoginAppStatus.failed;
         loginAppErrorMsg = "请求出错";
         return;
       }
-      debugPrint("ApiResponse: $data");
+      debugPrint("ApiResponse: $body");
 
-      // 提取 Token 信息
-      final tokenInfo = data.data!.asMap['data'];
+      // 提取 Token 信息 — 后端返回 {code, msg, data: {data: {accessToken, ...}}}
+      final nestedData = body['data'] as Map<String, dynamic>?;
+      final tokenInfo = nestedData?['data'] as Map<String, dynamic>?;
       debugPrint("请求信息: $tokenInfo");
+      if (tokenInfo == null) {
+        loginAppStatus.value = LoginAppStatus.failed;
+        loginAppErrorMsg = "登录出错: 响应格式异常";
+        return;
+      }
       final accessToken = tokenInfo['accessToken'] as String;
       final UserInfo userInfo_ = UserInfo.fromJson(tokenInfo['userInfo']);
 

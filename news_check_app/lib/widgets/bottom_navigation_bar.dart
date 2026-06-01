@@ -21,6 +21,13 @@ class MyNavigationBar extends StatefulWidget {
 class _MyNavigationBarState extends State<MyNavigationBar> {
   late int _currentIndex;
 
+  Widget _buildIndicator() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 30.0),
+      child: Container(height: 2, color: Theme.of(context).colorScheme.primary),
+    );
+  }
+
   List<Widget> _buildTabEntry() {
     List<Widget> result = [];
     for (int i = 0; i < widget.tabs.length; i++) {
@@ -39,7 +46,17 @@ class _MyNavigationBarState extends State<MyNavigationBar> {
                     });
                   },
                   child: _currentIndex == i
-                      ? widget.tabs[i].activeIcon
+                      ? Stack(
+                          children: [
+                            Center(child: widget.tabs[i].activeIcon),
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              child: _buildIndicator(),
+                            ),
+                          ],
+                        )
                       : widget.tabs[i].icon,
                 ),
               );
@@ -71,8 +88,11 @@ class _MyNavigationBarState extends State<MyNavigationBar> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(height: constraints.maxHeight - paddingBottom, child: Row(children: _buildTabEntry())),
-                SizedBox(height: paddingBottom,)
+                SizedBox(
+                  height: constraints.maxHeight - paddingBottom,
+                  child: Row(children: _buildTabEntry()),
+                ),
+                SizedBox(height: paddingBottom),
               ],
             ),
           );

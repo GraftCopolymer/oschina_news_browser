@@ -2,13 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:photo_view/photo_view.dart';
 
+Future<void> showHeroPhotoViewer(BuildContext context, String imageUrl) async {
+  await Navigator.push(
+    context,
+    PageRouteBuilder(
+      opaque: false,
+      barrierDismissible: false,
+      pageBuilder: (context, _, _) {
+        return _HeroPhotoViewer(imageUrl: imageUrl);
+      },
+      transitionDuration: Duration(milliseconds: 300),
+      reverseTransitionDuration: Duration(milliseconds: 300),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final backgroundColor = ColorTween(
+          begin: Colors.transparent,
+          end: Colors.black54, // 最终的遮罩颜色
+        ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut));
+        return AnimatedBuilder(
+          animation: backgroundColor,
+          builder: (context, child) {
+            return Container(color: backgroundColor.value, child: child);
+          },
+          child: child,
+        );
+      },
+    ),
+  );
+}
+
 class HeroPhotoOverlayRoute extends PageRouteBuilder {
   final Rect imageRect;
   final String imageUrl;
 
   HeroPhotoOverlayRoute({required this.imageRect, required this.imageUrl})
     : super(
-        // 关键：设置为透明，这样动画开始时能看到 WebView
+        // 设置为透明，这样动画开始时能看到 WebView
         opaque: false,
         fullscreenDialog: true,
         barrierColor: null, // 初始背景透明
@@ -40,37 +68,7 @@ class _HeroPhotoOverlayState extends State<_HeroPhotoOverlay> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Navigator.push(
-        context,
-        PageRouteBuilder(
-          opaque: false,
-          barrierDismissible: false,
-          pageBuilder: (context, _, _) {
-            return _HeroPhotoViewer(imageUrl: widget.imageUrl);
-          },
-          transitionDuration: Duration(milliseconds: 300),
-          reverseTransitionDuration: Duration(milliseconds: 300),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            final backgroundColor =
-                ColorTween(
-                  begin: Colors.transparent,
-                  end: Colors.black54, // 最终的遮罩颜色
-                ).animate(
-                  CurvedAnimation(parent: animation, curve: Curves.easeOut),
-                );
-            return AnimatedBuilder(
-              animation: backgroundColor,
-              builder: (context, child) {
-                return Container(
-                  color: backgroundColor.value,
-                  child: child,
-                );
-              },
-              child: child,
-            );
-          },
-        ),
-      );
+      await showHeroPhotoViewer(context, widget.imageUrl);
       await Future.delayed(Duration(milliseconds: 300));
       Get.back();
     });
@@ -111,10 +109,7 @@ class __HeroPhotoViewerState extends State<_HeroPhotoViewer> {
   late final PhotoViewScaleStateController _controller;
 
   void _resetPhotoScale() {
-    // PhotoView 本身对 controller.scale 的赋值是瞬间的
-    // 如果想要平滑动画，可以使用下面的方式
     _controller.scaleState = PhotoViewScaleState.initial;
-    // 如果需要更丝滑的动画，建议配合 PhotoViewScaleStateController 使用
   }
 
   @override
@@ -157,7 +152,7 @@ class __HeroPhotoViewerState extends State<_HeroPhotoViewer> {
                 },
               ),
             ),
-      
+
             // 关闭按钮
             Positioned(
               top: 40,
