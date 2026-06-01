@@ -18,21 +18,18 @@ class SearchResultController extends GetxController {
 
     try {
       final resp = await api.searchGet(q: query, catalog: catalog);
-      final data = resp.data['data'];
-      // OSCHINA 搜索 API 返回 searchlist 数组
-      final list = data['searchlist'] as List? ?? data['list'] as List? ?? [];
+      final body = resp.data;
+      if (body is! Map || resp.statusCode != 200) {
+        searchResults.clear();
+        return;
+      }
+      final data = (body['data'] as Map<String, dynamic>?);
+      final list = data?['searchlist'] as List? ?? data?['list'] as List? ?? [];
 
       searchResults.clear();
       for (final item in list) {
-        final mapped = <String, dynamic>{
-          'id': item['id'],
-          'title': item['title'] ?? '',
-          'author': item['author'] ?? '',
-          'pubDate': item['pubDate'] ?? '',
-          'authorid': item['authorid'] ?? 0,
-          'type': item['type'] ?? 0,
-          'commentCount': item['replyCount'] ?? item['commentCount'] ?? 0,
-        };
+        final mapped = Map<String, dynamic>.from(item as Map);
+        mapped['commentCount'] = item['replyCount'] ?? item['commentCount'] ?? 0;
         searchResults.add(NewsSimple.fromJson(mapped));
       }
     } catch (e) {
@@ -45,6 +42,7 @@ class SearchResultController extends GetxController {
   void clearResults() {
     searchResults.clear();
     _currentQuery = '';
+    _currentCatalog = 'news';
   }
 
   String get currentQuery => _currentQuery;
