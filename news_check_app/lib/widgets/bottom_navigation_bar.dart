@@ -76,26 +76,19 @@ class _MyNavigationBarState extends State<MyNavigationBar> {
   Widget build(BuildContext context) {
     final paddingBottom = MediaQuery.of(context).padding.bottom;
     return Container(
-      height: 64,
+      height: 64 + paddingBottom,
       width: double.infinity,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          debugPrint("最大高度: ${constraints.maxHeight}");
-          return SizedBox(
-            height: constraints.maxHeight,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  height: constraints.maxHeight - paddingBottom,
-                  child: Row(children: _buildTabEntry()),
-                ),
-                SizedBox(height: paddingBottom),
-              ],
-            ),
-          );
-        },
+      padding: EdgeInsets.only(bottom: paddingBottom),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        border: Border(
+          top: BorderSide(
+            color: Colors.grey.withAlpha(30),
+            width: 0.5,
+          ),
+        ),
       ),
+      child: Row(children: _buildTabEntry()),
     );
   }
 }
