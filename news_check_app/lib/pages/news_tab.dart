@@ -8,6 +8,7 @@ import 'package:get/instance_manager.dart';
 import 'package:news_check_app/controllers/news_list_controller.dart';
 import 'package:news_check_app/pages/news_detail_page.dart';
 import 'package:news_check_app/widgets/shimmer_loading.dart';
+import 'package:news_check_app/theme/app_colors.dart';
 import 'package:news_check_app/widgets/staggered_news_card.dart';
 
 class NewsTab extends StatefulWidget {
@@ -54,8 +55,12 @@ class _NewsTabState extends State<NewsTab> with AutomaticKeepAliveClientMixin {
         }
         return RefreshIndicator(
           onRefresh: () async {
-            _newsListController.refreshList();
+            await _newsListController.refreshList();
           },
+          displacement: 80,
+          color: AppColors.primary,
+          backgroundColor: Theme.of(context).cardColor,
+          strokeWidth: 3,
           child: MasonryGridView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             crossAxisSpacing: 12,
