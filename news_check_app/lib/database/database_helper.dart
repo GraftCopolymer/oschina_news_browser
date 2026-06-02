@@ -6,6 +6,11 @@ class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._();
 
   Database? _database;
+  String? _dbFilePath;
+
+  /// 数据库文件路径（用于计算缓存大小）
+  String? get dbFilePath => _dbFilePath;
+
   Future<Database> get database async {
     _database ??= await _initDatabase();
     return _database!;
@@ -14,6 +19,7 @@ class DatabaseHelper {
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'news_check.db');
+    _dbFilePath = path;
     return openDatabase(
       path,
       version: 1,

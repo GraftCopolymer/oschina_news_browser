@@ -130,10 +130,10 @@ class CacheDao {
   /// 统计缓存数据大小（数据库 + 图片文件）
   static Future<int> getTotalSize() async {
     final db = await _getDb();
-    final dbPath = await db.getPath();
-    final dbFile = File(dbPath);
+    final dbPath = DatabaseHelper.instance.dbFilePath;
+    final dbFile = dbPath != null ? File(dbPath) : null;
     int total = 0;
-    if (await dbFile.exists()) {
+    if (dbFile != null && await dbFile.exists()) {
       total += await dbFile.length();
     }
     final images = await db.query(
