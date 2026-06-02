@@ -159,10 +159,15 @@ class _StatsPageState extends State<StatsPage> {
                 if (i < 0 || i >= _controller.dailyTrend.length) {
                   return const SizedBox.shrink();
                 }
+                final dateLabel = _controller.dailyTrend[i].date;
+                final dt = DateTime.tryParse(dateLabel);
+                final display = dt != null
+                    ? '${dt.month}/${dt.day}'
+                    : dateLabel;
                 return Padding(
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(
-                    _controller.dailyTrend[i].date,
+                    display,
                     style: const TextStyle(fontSize: 10),
                   ),
                 );
@@ -174,7 +179,7 @@ class _StatsPageState extends State<StatsPage> {
         lineBarsData: [
           LineChartBarData(
             spots: spots,
-            isCurved: true,
+            isCurved: false,
             color: const Color(0xFF0D9488),
             barWidth: 2.5,
             dotData: FlDotData(
