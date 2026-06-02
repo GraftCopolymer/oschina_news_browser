@@ -67,7 +67,7 @@ class ReadingSettingsController extends GetxController {
     final prefs = StoreUtils.pref;
     await prefs.setDouble('reading_font_size', fontSize.value);
     await prefs.setDouble('reading_line_spacing', lineSpacing.value);
-    await prefs.setInt('reading_bg_mode', readingBg.index);
+    await prefs.setInt('reading_bg_mode', readingBg.value.index);
   }
 
   void resetToDefaults() {
