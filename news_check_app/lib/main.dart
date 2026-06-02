@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:news_check_app/controllers/app_settings_controller.dart';
 import 'package:news_check_app/controllers/auth_controller.dart';
+import 'package:news_check_app/controllers/offline_cache_controller.dart';
+import 'package:news_check_app/controllers/reading_stats_controller.dart';
 import 'package:news_check_app/database/database_helper.dart';
 import 'package:news_check_app/network/token_interceptor.dart';
 import 'package:news_check_app/pages/account_page.dart';
@@ -33,6 +35,8 @@ Future<void> main() async {
   await ImageDownloadService.instance.init();
   final authController = Get.put(AuthController());
   final appSettingsController = Get.put(AppSettingsController());
+  Get.put(OfflineCacheController());
+  Get.put(ReadingStatsController());
   // 等待加载用户信息
   await authController.loadingFuture;
   await appSettingsController.loadingFuture;
