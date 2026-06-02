@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:news_check_app/controllers/reading_settings_controller.dart';
+import 'package:news_check_app/database/cache_dao.dart';
+import 'package:news_check_app/database/read_history_dao.dart';
 import 'package:news_check_app/main.dart';
 import 'package:news_check_app/mixins/detail_image_preview_mixin.dart';
 import 'package:news_check_app/models/models.dart';
 import 'package:news_check_app/pages/common_detail_webview.dart';
-import 'package:news_check_app/database/cache_dao.dart';
-import 'package:news_check_app/database/read_history_dao.dart';
 import 'package:news_check_app/utils/image_download_service.dart';
 import 'package:news_check_app/utils/passage_utils.dart';
+import 'package:news_check_app/widgets/detail_bottom_bar.dart';
+import 'package:news_check_app/widgets/detail_progress_bar.dart';
+import 'package:news_check_app/widgets/reading_settings_sheet.dart';
 import 'package:news_check_app/widgets/shimmer_loading.dart';
 
 class BlogDetailPage extends StatefulWidget {
@@ -27,16 +31,24 @@ class _BlogDetailPageState extends State<BlogDetailPage>
 
   final _webViewKey = GlobalKey();
 
+  int _readProgress = 0;
+  bool _showBottomBar = true;
+  int _lastScrollTop = 0;
+  List<TocEntry> _tocEntries = [];
+  final _scrollToTocNotifier = ValueNotifier<String?>(null);
+  int _wordCount = 0;
+  int _estimatedMinutes = 1;
+
+  final _settingsCtrl = Get.find<ReadingSettingsController>();
+
   Future<void> _initData() async {
     if (!mounted) return;
     setState(() {
       _loading = true;
     });
 
-    // 先查缓存
     final cached = await CacheDao.get('blog', widget.blogId);
     if (cached != null) {
-      // 优先展示缓存内容
       final detail = BlogDetail(
         id: cached.itemId,
         title: cached.title,
@@ -54,10 +66,7 @@ class _BlogDetailPageState extends State<BlogDetailPage>
     }
 
     try {
-      // 调用博客详情 API
-      final resp = await api.blogDetailIdGet(
-        id: widget.blogId,
-      );
+      final resp = await api.blogDetailIdGet(id: widget.blogId);
       final body = resp.data as Map<String, dynamic>?;
       if (resp.statusCode != 200 || body == null) {
         if (cached == null) Fluttertoast.showToast(msg: "获取博客信息失败 ${resp.statusCode}");
@@ -68,30 +77,19 @@ class _BlogDetailPageState extends State<BlogDetailPage>
         if (cached == null) Fluttertoast.showToast(msg: "错误 数据未正常发送");
         return;
       }
-
-      // 解析为 BlogDetail
       final blogDetail = BlogDetail.fromJson(data['blog_detail']);
-                      final wordCount = PassageUtils.countReadableChars(blogDetail.body);
-                      await CacheDao.insert(
-                        type: 'blog',
-                        id: blogDetail.id,
-                        title: blogDetail.title,
-                        author: blogDetail.author,
-                        pubDate: blogDetail.pubDate,
-                        body: blogDetail.body,
-                      );
-                      await ReadHistoryDao.recordRead(
-                        type: 'blog',
-                        id: blogDetail.id,
-                        title: blogDetail.title,
-                        wordCount: wordCount,
-                      );
-                      final imageUrls = PassageUtils.extractImageUrls(blogDetail.body);
-                      if (imageUrls.isNotEmpty) {
-                        ImageDownloadService.instance
-                            .enqueueImageDownloads('blog_${blogDetail.id}', imageUrls);
-                      }
-
+      final wordCount = PassageUtils.countReadableChars(blogDetail.body);
+      await CacheDao.insert(
+        type: 'blog', id: blogDetail.id, title: blogDetail.title,
+        author: blogDetail.author, pubDate: blogDetail.pubDate, body: blogDetail.body,
+      );
+      await ReadHistoryDao.recordRead(
+        type: 'blog', id: blogDetail.id, title: blogDetail.title, wordCount: wordCount,
+      );
+      final imageUrls = PassageUtils.extractImageUrls(blogDetail.body);
+      if (imageUrls.isNotEmpty) {
+        ImageDownloadService.instance.enqueueImageDownloads('blog_${blogDetail.id}', imageUrls);
+      }
       if (mounted) {
         setState(() {
           _detail = blogDetail;
@@ -110,43 +108,57 @@ class _BlogDetailPageState extends State<BlogDetailPage>
     }
   }
 
-  Widget _buildBody() {
-    if (_loading) {
-      return const Center(child: ShimmerCard());
-    } else if (_detail == null) {
-      return Center(
-        child: Column(
+  void _onProgressChanged(int progress) {
+    if (_readProgress != progress) {
+      setState(() {
+        _readProgress = progress;
+      });
+    }
+  }
+
+  void _onScrollChanged(int scrollTop) {
+    final delta = scrollTop - _lastScrollTop;
+    if (delta.abs() > 10) {
+      if (delta > 0 && _showBottomBar) {
+        setState(() => _showBottomBar = false);
+      } else if (delta < 0 && !_showBottomBar) {
+        setState(() => _showBottomBar = true);
+      }
+    }
+    _lastScrollTop = scrollTop;
+  }
+
+  void _showToc() {
+    if (_tocEntries.isEmpty) {
+      Fluttertoast.showToast(msg: "本文无目录");
+      return;
+    }
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) {
+        final theme = Theme.of(context);
+        return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: Colors.grey),
-            const SizedBox(height: 12),
-            const Text("加载失败"),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _initData,
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(120, 40),
-              ),
-              child: const Text("重试"),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text('文章目录', style: theme.textTheme.titleMedium),
             ),
+            ..._tocEntries.map((e) => ListTile(
+              leading: Text('H${e.level}',
+                style: const TextStyle(fontSize: 11, fontFamily: 'monospace', fontWeight: FontWeight.w500)),
+              title: Text(e.text, maxLines: 2, overflow: TextOverflow.ellipsis),
+              dense: true,
+              onTap: () {
+                Get.back();
+                _scrollToTocNotifier.value = e.id;
+              },
+            )),
+            const SizedBox(height: 8),
           ],
-        ),
-      );
-    } else {
-      return CommonDetailWebView(
-        htmlContent: PassageUtils.wrapBodyForWebView(
-          title: _detail!.title,
-          author: _detail!.author,
-          pubDate: _detail!.pubDate,
-          body: _detail!.body,
-          isDark: Get.isDarkMode,
-        ),
-        webViewKey: _webViewKey,
-        onImageClick: (data) {
-          handleImageClick(context, _webViewKey, data);
-        },
-      );
-    }
+        );
+      },
+    );
   }
 
   @override
@@ -156,10 +168,126 @@ class _BlogDetailPageState extends State<BlogDetailPage>
   }
 
   @override
+  void dispose() {
+    _scrollToTocNotifier.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      appBar: AppBar(title: const Text("博客详情")),
-      body: _buildBody(),
+      appBar: AppBar(
+        title: const Text("博客详情"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.text_fields),
+            tooltip: '阅读设置',
+            onPressed: () => showReadingSettingsSheet(context),
+          ),
+        ],
+      ),
+      body: _loading && _detail == null
+          ? const Center(child: ShimmerCard())
+          : _detail == null
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.error_outline, size: 48, color: Colors.grey),
+                      const SizedBox(height: 12),
+                      const Text("加载失败"),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _initData,
+                        style: ElevatedButton.styleFrom(minimumSize: const Size(120, 40)),
+                        child: const Text("重试"),
+                      ),
+                    ],
+                  ),
+                )
+              : Stack(
+                  children: [
+                    Column(
+                      children: [
+                        DetailProgressBar(progress: _readProgress / 100.0),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 16,
+                                backgroundColor: colorScheme.primaryContainer,
+                                child: Text(
+                                  _detail!.author.isNotEmpty ? _detail!.author[0] : '?',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: colorScheme.onPrimaryContainer,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(_detail!.author,
+                                      style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+                                    Text(
+                                      '${_detail!.pubDate} · 约 $_estimatedMinutes 分钟 · $_wordCount 字',
+                                      style: theme.textTheme.bodySmall?.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(child: _buildWebView()),
+                      ],
+                    ),
+                    Positioned(
+                      left: 0, right: 0, bottom: 0,
+                      child: DetailBottomBar(
+                        isVisible: _showBottomBar,
+                        onFontSettings: () => showReadingSettingsSheet(context),
+                        onToc: _showToc,
+                        onBookmark: () => Fluttertoast.showToast(msg: "收藏功能开发中"),
+                      ),
+                    ),
+                  ],
+                ),
+    );
+  }
+
+  Widget _buildWebView() {
+    final (htmlContent, toc) = PassageUtils.wrapBodyForWebView(
+      title: _detail!.title,
+      author: _detail!.author,
+      pubDate: _detail!.pubDate,
+      body: _detail!.body,
+      isDark: Get.isDarkMode,
+      fontSize: _settingsCtrl.fontSize.value,
+      lineSpacing: _settingsCtrl.lineSpacing.value,
+    );
+    _tocEntries = toc;
+    _wordCount = PassageUtils.countReadableChars(_detail!.body);
+    _estimatedMinutes = (_wordCount / 300).ceil().clamp(1, 999);
+
+    return CommonDetailWebView(
+      htmlContent: htmlContent,
+      webViewKey: _webViewKey,
+      tocEntries: _tocEntries,
+      scrollToTocNotifier: _scrollToTocNotifier,
+      onImageClick: (data) {
+        handleImageClick(context, _webViewKey, data);
+      },
+      onProgressChanged: _onProgressChanged,
+      onScrollChanged: _onScrollChanged,
     );
   }
 }
