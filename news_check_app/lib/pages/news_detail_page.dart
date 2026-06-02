@@ -32,18 +32,39 @@ class _NewsDetailPageState extends State<NewsDetailPage>
     setState(() {
       _loading = true;
     });
+
+    // 先查缓存
+    final cached = await CacheDao.get('news', widget.newsId);
+    if (cached != null) {
+      // 优先展示缓存内容
+      final detail = NewsDetail(
+        id: cached.itemId,
+        title: cached.title,
+        author: cached.author,
+        pubDate: cached.pubDate,
+        body: cached.localBody ?? cached.body,
+        authorid: 0,
+      );
+      if (mounted) {
+        setState(() {
+          _detail = detail;
+          _loading = false;
+        });
+      }
+    }
+
     try {
       final resp = await api.newsDetailIdGet(
         id: widget.newsId,
       );
       final body = resp.data as Map<String, dynamic>?;
       if (resp.statusCode != 200 || body == null) {
-        Fluttertoast.showToast(msg: "获取新闻信息失败 ${resp.statusCode}");
+        if (cached == null) Fluttertoast.showToast(msg: "获取新闻信息失败 ${resp.statusCode}");
         return;
       }
       final data = body['data'] as Map<String, dynamic>?;
       if (data == null) {
-        Fluttertoast.showToast(msg: "错误 数据未正常发送");
+        if (cached == null) Fluttertoast.showToast(msg: "错误 数据未正常发送");
         return;
       }
       final newsDetail = NewsDetail.fromJson(data['news_detail']);
@@ -69,14 +90,16 @@ class _NewsDetailPageState extends State<NewsDetailPage>
                         ImageDownloadService.instance
                             .enqueueImageDownloads('news_${newsDetail.id}', imageUrls);
                       }
-                      // 构造自适应屏幕的 HTML 内容
       if (mounted) {
         setState(() {
           _detail = newsDetail;
         });
       }
     } catch (e) {
-      Fluttertoast.showToast(msg: "发生错误");
+      if (cached == null) {
+        Fluttertoast.showToast(msg: "发生错误");
+      }
+      // 有缓存时不弹 toast，缓存已在上方展示
     } finally {
       if (mounted) {
         setState(() {

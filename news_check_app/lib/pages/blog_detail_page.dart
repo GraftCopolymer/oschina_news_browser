@@ -32,6 +32,27 @@ class _BlogDetailPageState extends State<BlogDetailPage>
     setState(() {
       _loading = true;
     });
+
+    // 先查缓存
+    final cached = await CacheDao.get('blog', widget.blogId);
+    if (cached != null) {
+      // 优先展示缓存内容
+      final detail = BlogDetail(
+        id: cached.itemId,
+        title: cached.title,
+        author: cached.author,
+        pubDate: cached.pubDate,
+        body: cached.localBody ?? cached.body,
+        authorid: 0,
+      );
+      if (mounted) {
+        setState(() {
+          _detail = detail;
+          _loading = false;
+        });
+      }
+    }
+
     try {
       // 调用博客详情 API
       final resp = await api.blogDetailIdGet(
@@ -39,12 +60,12 @@ class _BlogDetailPageState extends State<BlogDetailPage>
       );
       final body = resp.data as Map<String, dynamic>?;
       if (resp.statusCode != 200 || body == null) {
-        Fluttertoast.showToast(msg: "获取博客信息失败 ${resp.statusCode}");
+        if (cached == null) Fluttertoast.showToast(msg: "获取博客信息失败 ${resp.statusCode}");
         return;
       }
       final data = body['data'] as Map<String, dynamic>?;
       if (data == null) {
-        Fluttertoast.showToast(msg: "错误 数据未正常发送");
+        if (cached == null) Fluttertoast.showToast(msg: "错误 数据未正常发送");
         return;
       }
 
@@ -77,7 +98,9 @@ class _BlogDetailPageState extends State<BlogDetailPage>
         });
       }
     } catch (e) {
-      Fluttertoast.showToast(msg: "发生错误");
+      if (cached == null) {
+        Fluttertoast.showToast(msg: "发生错误");
+      }
     } finally {
       if (mounted) {
         setState(() {
