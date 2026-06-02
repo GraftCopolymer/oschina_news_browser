@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:news_check_app/main.dart';
 import 'package:news_check_app/models/models.dart';

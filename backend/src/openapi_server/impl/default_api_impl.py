@@ -339,13 +339,14 @@ async def search_get(
     async with httpx.AsyncClient() as client:
         try:
             resp = await client.post(
-                oschina("/action/openapi/search"),
+                oschina("/action/openapi/search_list"),
                 data={
                     "access_token": user.oschina_token,
                     "q": q,
                     "catalog": catalog,
                     "page": page,
                     "pageSize": page_size,
+                    "dataType": "json",
                 },
                 headers=headers,
             )
