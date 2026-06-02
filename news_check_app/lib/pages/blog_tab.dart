@@ -55,7 +55,7 @@ class _BlogTabState extends State<BlogTab> with AutomaticKeepAliveClientMixin {
         }
         return RefreshIndicator(
           onRefresh: () async {
-            await _blogListController.refreshList();
+            _blogListController.refreshList();
           },
           displacement: 80,
           color: AppColors.primary,

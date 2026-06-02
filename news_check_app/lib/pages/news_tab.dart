@@ -55,7 +55,7 @@ class _NewsTabState extends State<NewsTab> with AutomaticKeepAliveClientMixin {
         }
         return RefreshIndicator(
           onRefresh: () async {
-            await _newsListController.refreshList();
+            _newsListController.refreshList();
           },
           displacement: 80,
           color: AppColors.primary,
