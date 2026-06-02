@@ -6,6 +6,7 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/instance_manager.dart';
 import 'package:news_check_app/controllers/news_list_controller.dart';
+import 'package:news_check_app/controllers/offline_cache_controller.dart';
 import 'package:news_check_app/pages/news_detail_page.dart';
 import 'package:news_check_app/widgets/shimmer_loading.dart';
 import 'package:news_check_app/theme/app_colors.dart';
@@ -82,7 +83,13 @@ class _NewsTabState extends State<NewsTab> with AutomaticKeepAliveClientMixin {
                 news: news,
                 height: height,
                 onTap: (n) {
-                  Get.to(() => NewsDetailPage(newsId: n.id));
+                  Get.to(() => NewsDetailPage(newsId: n.id))
+                      ?.then((_) {
+                    if (mounted) {
+                      Get.find<OfflineCacheController>()
+                          .refreshCachedKeys();
+                    }
+                  });
                 },
               );
             },

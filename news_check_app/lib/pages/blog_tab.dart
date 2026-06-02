@@ -6,6 +6,7 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/instance_manager.dart';
 import 'package:news_check_app/controllers/blog_list_controller.dart';
+import 'package:news_check_app/controllers/offline_cache_controller.dart';
 import 'package:news_check_app/pages/blog_detail_page.dart';
 import 'package:news_check_app/widgets/shimmer_loading.dart';
 import 'package:news_check_app/theme/app_colors.dart';
@@ -81,7 +82,13 @@ class _BlogTabState extends State<BlogTab> with AutomaticKeepAliveClientMixin {
                 blog: blog,
                 height: height,
                 onTap: (b) {
-                  Get.to(() => BlogDetailPage(blogId: b.id));
+                  Get.to(() => BlogDetailPage(blogId: b.id))
+                      ?.then((_) {
+                    if (mounted) {
+                      Get.find<OfflineCacheController>()
+                          .refreshCachedKeys();
+                    }
+                  });
                 },
               );
             },
