@@ -249,6 +249,16 @@ class CacheDao {
     );
   }
 
+  /// 获取所有缓存的文章（按缓存时间倒序）
+  static Future<List<CacheItem>> getAll() async {
+    final db = await _getDb();
+    final result = await db.query(
+      'cache_items',
+      orderBy: 'cached_at DESC',
+    );
+    return result.map((row) => CacheItem.fromMap(row)).toList();
+  }
+
   /// 统计未完成的任务数量
   static Future<int> getPendingTaskCount() async {
     final db = await _getDb();

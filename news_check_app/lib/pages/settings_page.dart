@@ -6,6 +6,7 @@ import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:get/route_manager.dart';
 import 'package:news_check_app/controllers/app_settings_controller.dart';
 import 'package:news_check_app/controllers/offline_cache_controller.dart';
+import 'package:news_check_app/pages/cache_management_page.dart';
 import 'package:news_check_app/widgets/setting_item_group.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -127,12 +128,12 @@ class _SettingsPageState extends State<SettingsPage> {
                 return SettingItemGroup(
                   settingItems: [
                     SettingItem(
-                      title: Text("缓存数据"),
+                      title: const Text("管理缓存"),
                       tail: Text("$sizeMB MB"),
-                      onTap: () {},
+                      onTap: () => Get.to(() => const CacheManagementPage()),
                     ),
                     SettingItem(
-                      title: Text("清除缓存"),
+                      title: const Text("清除全部缓存"),
                       onTap: () {},
                       tail: TextButton(
                         onPressed: () async {
@@ -154,7 +155,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             }
                           }
                         },
-                        child: const Text("清除缓存"),
+                        child: const Text("清除所有"),
                       ),
                     ),
                   ],
