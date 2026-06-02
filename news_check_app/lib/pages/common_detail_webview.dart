@@ -35,6 +35,7 @@ class CommonDetailWebView extends StatefulWidget {
 class _CommonDetailWebViewState extends State<CommonDetailWebView> {
   late final WebViewController _controller;
   final _settingsCtrl = Get.find<ReadingSettingsController>();
+  late final Worker _fontSizeWorker, _lineSpacingWorker, _readingBgWorker;
 
   void injectSettings() {
     _controller.runJavaScript(_settingsCtrl.injectCssVariablesJs);
@@ -107,12 +108,18 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
         onMessageReceived: (msg) {
           final data = jsonDecode(msg.message) as Map<String, dynamic>;
           final progress = data['progress'] as int;
-          final scrollTop = data['scrollTop'] as int;
+          final scrollNum = data['scrollTop'] as num;
+          final scrollTop = scrollNum.toInt();
           widget.onProgressChanged?.call(progress);
           widget.onScrollChanged?.call(scrollTop);
         },
       )
       ..loadHtmlString(widget.htmlContent);
+
+    // 监听阅读设置变化，实时注入 WebView
+    _fontSizeWorker = ever(_settingsCtrl.fontSize, (_) => injectSettings());
+    _lineSpacingWorker = ever(_settingsCtrl.lineSpacing, (_) => injectSettings());
+    _readingBgWorker = ever(_settingsCtrl.readingBg, (_) => injectSettings());
   }
 
   void _onScrollToTocCommand() {
@@ -127,6 +134,9 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
   @override
   void dispose() {
     widget.scrollToTocNotifier?.removeListener(_onScrollToTocCommand);
+    _fontSizeWorker();
+    _lineSpacingWorker();
+    _readingBgWorker();
     super.dispose();
   }
 

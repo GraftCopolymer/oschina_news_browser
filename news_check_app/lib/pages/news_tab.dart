@@ -2,9 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
-import 'package:get/get_state_manager/get_state_manager.dart';
-import 'package:get/instance_manager.dart';
+import 'package:get/get.dart';
 import 'package:news_check_app/controllers/news_list_controller.dart';
 import 'package:news_check_app/controllers/offline_cache_controller.dart';
 import 'package:news_check_app/pages/cache_management_page.dart';
@@ -22,6 +20,7 @@ class NewsTab extends StatefulWidget {
 
 class _NewsTabState extends State<NewsTab> with AutomaticKeepAliveClientMixin {
   final _newsListController = Get.put(NewsListController());
+  late final Worker _cacheWorker;
 
   @override
   void initState() {
@@ -37,6 +36,17 @@ class _NewsTabState extends State<NewsTab> with AutomaticKeepAliveClientMixin {
         Fluttertoast.showToast(msg: "未知错误");
       }
     });
+    // 监听缓存变化，强制列表重建使卡片"已缓存"标记及时更新
+    _cacheWorker = ever(
+      Get.find<OfflineCacheController>().cachedKeys,
+      (_) => _newsListController.newsList.refresh(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _cacheWorker();
+    super.dispose();
   }
 
   @override

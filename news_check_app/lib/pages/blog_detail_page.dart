@@ -57,10 +57,13 @@ class _BlogDetailPageState extends State<BlogDetailPage>
         body: cached.localBody ?? cached.body,
         authorid: 0,
       );
+      final count = PassageUtils.countReadableChars(detail.body);
       if (mounted) {
         setState(() {
           _detail = detail;
           _loading = false;
+          _wordCount = count;
+          _estimatedMinutes = (count / 300).ceil().clamp(1, 999);
         });
       }
     }
@@ -93,6 +96,8 @@ class _BlogDetailPageState extends State<BlogDetailPage>
       if (mounted) {
         setState(() {
           _detail = blogDetail;
+          _wordCount = wordCount;
+          _estimatedMinutes = (wordCount / 300).ceil().clamp(1, 999);
         });
       }
     } catch (e) {
@@ -213,38 +218,47 @@ class _BlogDetailPageState extends State<BlogDetailPage>
                     Column(
                       children: [
                         DetailProgressBar(progress: _readProgress / 100.0),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 16,
-                                backgroundColor: colorScheme.primaryContainer,
-                                child: Text(
-                                  _detail!.author.isNotEmpty ? _detail!.author[0] : '?',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: colorScheme.onPrimaryContainer,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(_detail!.author,
-                                      style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
-                                    Text(
-                                      '${_detail!.pubDate} · 约 $_estimatedMinutes 分钟 · $_wordCount 字',
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: colorScheme.onSurfaceVariant,
+                        AnimatedSlide(
+                          offset: _showBottomBar ? Offset.zero : const Offset(0, -1.1),
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeInOut,
+                          child: AnimatedOpacity(
+                            opacity: _showBottomBar ? 1.0 : 0.0,
+                            duration: const Duration(milliseconds: 150),
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 16,
+                                    backgroundColor: colorScheme.primaryContainer,
+                                    child: Text(
+                                      _detail!.author.isNotEmpty ? _detail!.author[0] : '?',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: colorScheme.onPrimaryContainer,
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(_detail!.author,
+                                          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+                                        Text(
+                                          '${_detail!.pubDate} · 约 $_estimatedMinutes 分钟 · $_wordCount 字',
+                                          style: theme.textTheme.bodySmall?.copyWith(
+                                            color: colorScheme.onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
                         Expanded(child: _buildWebView()),
