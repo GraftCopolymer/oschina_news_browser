@@ -81,16 +81,8 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("搜索"),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            if (_hasSearched) {
-              _clearSearch();
-            } else {
-              Get.back();
-            }
-          },
-        ),
+        automaticallyImplyLeading: false,
+        automaticallyImplyActions: false,
       ),
       body: Column(
         children: [
@@ -119,7 +111,13 @@ class _SearchPageState extends State<SearchPage> {
                   borderSide: BorderSide.none,
                 ),
               ),
-              onChanged: (_) => setState(() {}),
+              onTap: () {
+                  // 在展示搜索结果时点击搜索框 → 返回历史记录视图
+                  if (_hasSearched) {
+                    _clearSearch();
+                  }
+                },
+                onChanged: (_) => setState(() {}),
               onSubmitted: _performSearch,
             ),
           ),
