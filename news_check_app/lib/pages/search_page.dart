@@ -99,7 +99,11 @@ class _SearchPageState extends State<SearchPage> {
                     ? IconButton(
                         onPressed: () {
                           _textController.clear();
-                          setState(() {});
+                          if (_hasSearched) {
+                            _clearSearch();
+                          } else {
+                            setState(() {});
+                          }
                         },
                         icon: const Icon(Icons.clear),
                       )
