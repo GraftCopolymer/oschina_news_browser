@@ -1,10 +1,8 @@
 import 'package:get/get.dart';
+import 'package:news_check_app/main.dart';
 import 'package:news_check_app/models/models.dart';
-import 'package:news_check_app/services/api_client.dart';
 
 class SearchResultController extends GetxController {
-  final api = Get.find<ApiClient>();
-
   final RxList<NewsSimple> searchResults = <NewsSimple>[].obs;
   final RxBool isSearching = false.obs;
   String _currentQuery = '';
