@@ -1,30 +1,38 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:news_check_app/main.dart';
+import 'package:news_check_app/utils/passage_utils.dart';
+import 'package:news_check_app/models/models.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  test('utility modules are importable', () {
+    expect(PassageUtils.countReadableChars('test'), isA<int>());
+  });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  test('models are importable and constructable', () {
+    final news = NewsSimple(
+      id: 1,
+      title: '测试',
+      author: '作者',
+      pubDate: '2026-01-01',
+      type: '4',
+      commentCount: 0,
+    );
+    expect(news.title, equals('测试'));
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    final blog = BlogSimple(
+      id: 2,
+      title: '博客',
+      author: '作者',
+      pubDate: '2026-01-01',
+      type: 1,
+      commentCount: 5,
+      authorid: 0,
+    );
+    expect(blog.title, equals('博客'));
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  test('TokenModel can be constructed', () {
+    final model = TokenModel(sub: '42', exp: 9999999999);
+    expect(model.sub, equals('42'));
+    expect(model.exp, equals(9999999999));
   });
 }
