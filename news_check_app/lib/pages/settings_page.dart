@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:get/route_manager.dart';
 import 'package:news_check_app/controllers/app_settings_controller.dart';
+import 'package:news_check_app/controllers/offline_cache_controller.dart';
 import 'package:news_check_app/widgets/setting_item_group.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -111,6 +113,49 @@ class _SettingsPageState extends State<SettingsPage> {
                       onTap: () {
                         _showThemeChangeDialog();
                       },
+                    ),
+                  ],
+                );
+              }),
+            ),
+            _buildSettingGroupTitle("缓存管理"),
+            Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: Obx(() {
+                final cacheCtrl = Get.find<OfflineCacheController>();
+                final sizeMB = (cacheCtrl.cacheSizeBytes.value / (1024 * 1024)).toStringAsFixed(1);
+                return SettingItemGroup(
+                  settingItems: [
+                    SettingItem(
+                      title: Text("缓存数据"),
+                      tail: Text("$sizeMB MB"),
+                      onTap: () {},
+                    ),
+                    SettingItem(
+                      title: Text("清除缓存"),
+                      onTap: () {},
+                      tail: TextButton(
+                        onPressed: () async {
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text("清除缓存"),
+                              content: const Text("确定要清除所有离线缓存数据吗？\n包括已下载的图片。"),
+                              actions: [
+                                TextButton(onPressed: () => Get.back(result: false), child: const Text("取消")),
+                                TextButton(onPressed: () => Get.back(result: true), child: const Text("确定")),
+                              ],
+                            ),
+                          );
+                          if (confirm == true) {
+                            await cacheCtrl.clearCache();
+                            if (context.mounted) {
+                              Fluttertoast.showToast(msg: "缓存已清除");
+                            }
+                          }
+                        },
+                        child: const Text("清除缓存"),
+                      ),
                     ),
                   ],
                 );
