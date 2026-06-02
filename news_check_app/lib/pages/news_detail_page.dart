@@ -128,15 +128,12 @@ class _NewsDetailPageState extends State<NewsDetailPage>
   }
 
   void _onScrollChanged(int scrollTop) {
-    if (scrollTop == -1) return; // 忽略测试消息
+    if (scrollTop == -1) return;
     final delta = scrollTop - _lastScrollTop;
-    debugPrint('[scroll] scrollTop=$scrollTop last=$_lastScrollTop delta=$delta showBottomBar=$_showBottomBar');
     if (delta.abs() > 10) {
       if (delta > 0 && _showBottomBar) {
-        debugPrint('[scroll] → HIDE bottom bar & meta');
         setState(() => _showBottomBar = false);
       } else if (delta < 0 && !_showBottomBar) {
-        debugPrint('[scroll] → SHOW bottom bar & meta');
         setState(() => _showBottomBar = true);
       }
     }
@@ -228,48 +225,46 @@ class _NewsDetailPageState extends State<NewsDetailPage>
                     Column(
                       children: [
                         DetailProgressBar(progress: _readProgress / 100.0),
-                        AnimatedSlide(
-                          offset: _showBottomBar ? Offset.zero : const Offset(0, -1.1),
+                        AnimatedSize(
                           duration: const Duration(milliseconds: 200),
                           curve: Curves.easeInOut,
-                          child: AnimatedOpacity(
-                            opacity: _showBottomBar ? 1.0 : 0.0,
-                            duration: const Duration(milliseconds: 150),
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                              child: Row(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 16,
-                                    backgroundColor: colorScheme.primaryContainer,
-                                    child: Text(
-                                      _detail!.author.isNotEmpty ? _detail!.author[0] : '?',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: colorScheme.onPrimaryContainer,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(_detail!.author,
-                                          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
-                                        Text(
-                                          '${_detail!.pubDate} · 约 $_estimatedMinutes 分钟 · $_wordCount 字',
-                                          style: theme.textTheme.bodySmall?.copyWith(
-                                            color: colorScheme.onSurfaceVariant,
+                          alignment: Alignment.topCenter,
+                          child: _showBottomBar
+                              ? Padding(
+                                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                                  child: Row(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 16,
+                                        backgroundColor: colorScheme.primaryContainer,
+                                        child: Text(
+                                          _detail!.author.isNotEmpty ? _detail!.author[0] : '?',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: colorScheme.onPrimaryContainer,
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(_detail!.author,
+                                              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+                                            Text(
+                                              '${_detail!.pubDate} · 约 $_estimatedMinutes 分钟 · $_wordCount 字',
+                                              style: theme.textTheme.bodySmall?.copyWith(
+                                                color: colorScheme.onSurfaceVariant,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
-                          ),
+                                )
+                              : const SizedBox(width: double.infinity, height: 0),
                         ),
                         Expanded(child: _buildWebView()),
                       ],

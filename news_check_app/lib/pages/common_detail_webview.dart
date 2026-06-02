@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -37,13 +36,12 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
   late final WebViewController _controller;
   final _settingsCtrl = Get.find<ReadingSettingsController>();
   late final Worker _fontSizeWorker, _lineSpacingWorker, _readingBgWorker;
-  Timer? _scrollPollTimer;
-  bool _pollingInProgress = false;
 
   void injectSettings() {
     _controller.runJavaScript(_settingsCtrl.injectCssVariablesJs);
   }
 
+  /// 注入图片点击 + 滚动检测（使用 window.addEventListener 替代 onscroll）
   String get _injectAllJs => '''
     (function() {
       ${_settingsCtrl.injectCssVariablesJs.replaceAll('(function() {', '').replaceAll('})();', '')}
@@ -59,48 +57,16 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
           }));
         };
       }
+      window.addEventListener('scroll', function() {
+        var scrollTop = window.scrollY;
+        var scrollHeight = document.body.scrollHeight;
+        var clientHeight = window.innerHeight;
+        var diff = scrollHeight - clientHeight;
+        var progress = diff > 0 ? Math.round(scrollTop / diff * 100) : 0;
+        ReadingProgress.postMessage(JSON.stringify({progress: progress, scrollTop: scrollTop}));
+      }, {passive: true});
     })();
   ''';
-
-  /// 轮询 WebView 滚动位置（用分隔符替代 JSON.stringify，避免编码问题）
-  String get _pollJs => '''
-    (function() {
-      var st = document.documentElement.scrollTop || document.body.scrollTop;
-      var ch = document.documentElement.clientHeight;
-      var sh = document.documentElement.scrollHeight;
-      var diff = sh - ch;
-      var p = diff > 0 ? Math.round(st / diff * 100) : 0;
-      return Math.round(st) + '|' + Math.round(p) + '|' + Math.round(ch) + '|' + Math.round(sh);
-    })();
-  ''';
-
-  void _startScrollPolling() {
-    _scrollPollTimer?.cancel();
-    debugPrint('[poll] starting scroll polling...');
-    _scrollPollTimer = Timer.periodic(const Duration(milliseconds: 300), (_) async {
-      if (_pollingInProgress) return;
-      _pollingInProgress = true;
-      try {
-        final raw = await _controller.runJavaScriptReturningResult(_pollJs);
-        // 去除平台通道附加的双引号
-        final result = (raw is String) ? raw.replaceAll('"', '') : '';
-        final parts = result.split('|');
-        if (parts.length >= 2) {
-          final scrollTop = int.tryParse(parts[0]) ?? 0;
-          final progress = int.tryParse(parts[1]) ?? 0;
-          debugPrint('[poll] scrollTop=$scrollTop progress=$progress (ch=${parts.length>2 ? parts[2] : '?'} sh=${parts.length>3 ? parts[3] : '?'})');
-          widget.onProgressChanged?.call(progress);
-          widget.onScrollChanged?.call(scrollTop);
-        } else {
-          debugPrint('[poll] unexpected format: "$raw"');
-        }
-      } catch (e) {
-        debugPrint('[poll] ERROR: $e');
-      } finally {
-        _pollingInProgress = false;
-      }
-    });
-  }
 
   @override
   void initState() {
@@ -121,7 +87,6 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
           },
           onPageFinished: (_) {
             _controller.runJavaScript(_injectAllJs);
-            _startScrollPolling();
           },
         ),
       )
@@ -162,7 +127,6 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
   @override
   void dispose() {
     widget.scrollToTocNotifier?.removeListener(_onScrollToTocCommand);
-    _scrollPollTimer?.cancel();
     _fontSizeWorker();
     _lineSpacingWorker();
     _readingBgWorker();
