@@ -104,7 +104,7 @@ class ReadHistoryDao {
     final trend = <DailyStat>[];
     for (int i = days - 1; i >= 0; i--) {
       final d = DateTime.now().subtract(Duration(days: i));
-      final dateStr = '${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+      final dateStr = '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
       trend.add(dateMap[dateStr] ?? DailyStat(date: dateStr, count: 0, wordCount: 0));
     }
     return trend;
