@@ -66,12 +66,10 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
   String get _pollJs => '''
     (function() {
       var st = document.documentElement.scrollTop || document.body.scrollTop;
-      var sh = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      if (sh > 0) {
-        var p = Math.round(st / sh * 100);
-        return JSON.stringify({progress: p, scrollTop: st});
-      }
-      return '{}';
+      var clientH = document.documentElement.clientHeight;
+      var scrollH = document.documentElement.scrollHeight;
+      var sh = scrollH - clientH;
+      return JSON.stringify({progress: sh > 0 ? Math.round(st / sh * 100) : 0, scrollTop: st});
     })();
   ''';
 
