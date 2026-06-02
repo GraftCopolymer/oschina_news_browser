@@ -66,9 +66,11 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
   String get _pollJs => '''
     (function() {
       var st = document.documentElement.scrollTop || document.body.scrollTop;
-      var sh = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      var p = sh > 0 ? Math.round(st / sh * 100) : 0;
-      return String(st) + '|||' + String(p);
+      var ch = document.documentElement.clientHeight;
+      var sh = document.documentElement.scrollHeight;
+      var diff = sh - ch;
+      var p = diff > 0 ? Math.round(st / diff * 100) : 0;
+      return Math.round(st) + '|' + Math.round(p) + '|' + Math.round(ch) + '|' + Math.round(sh);
     })();
   ''';
 
@@ -79,19 +81,18 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
       if (_pollingInProgress) return;
       _pollingInProgress = true;
       try {
-        final result = await _controller.runJavaScriptReturningResult(_pollJs);
-        debugPrint('[poll] raw: "$result"');
-        if (result is String && result.contains('|||')) {
-          final parts = result.split('|||');
-          if (parts.length == 2) {
-            final scrollTop = double.tryParse(parts[0])?.toInt() ?? 0;
-            final progress = double.tryParse(parts[1])?.toInt() ?? 0;
-            debugPrint('[poll] parsed → scrollTop=$scrollTop progress=$progress');
-            widget.onProgressChanged?.call(progress);
-            widget.onScrollChanged?.call(scrollTop);
-          }
+        final raw = await _controller.runJavaScriptReturningResult(_pollJs);
+        // 去除平台通道附加的双引号
+        final result = (raw is String) ? raw.replaceAll('"', '') : '';
+        final parts = result.split('|');
+        if (parts.length >= 2) {
+          final scrollTop = int.tryParse(parts[0]) ?? 0;
+          final progress = int.tryParse(parts[1]) ?? 0;
+          debugPrint('[poll] scrollTop=$scrollTop progress=$progress (ch=${parts.length>2 ? parts[2] : '?'} sh=${parts.length>3 ? parts[3] : '?'})');
+          widget.onProgressChanged?.call(progress);
+          widget.onScrollChanged?.call(scrollTop);
         } else {
-          debugPrint('[poll] unexpected format: "$result"');
+          debugPrint('[poll] unexpected format: "$raw"');
         }
       } catch (e) {
         debugPrint('[poll] ERROR: $e');
