@@ -173,6 +173,18 @@ class PassageUtils {
     ].join('\n');
   }
 
+  /// 统计有效阅读字符数（去掉 HTML 标签后的非空白字符）
+  static int countReadableChars(String htmlOrMarkdown) {
+    final stripped = htmlOrMarkdown.replaceAll(RegExp(r'<[^>]*>'), '');
+    return stripped.replaceAll(RegExp(r'\s'), '').length;
+  }
+
+  /// 从 HTML 中提取所有图片 URL
+  static List<String> extractImageUrls(String html) {
+    final regex = RegExp(r'<img[^>]+src="([^">]+)"');
+    return regex.allMatches(html).map((m) => m.group(1)!).toList();
+  }
+
   // 统一的图片点击 JS 注入脚本
   static const String imageClickJs = """
     (function() {
