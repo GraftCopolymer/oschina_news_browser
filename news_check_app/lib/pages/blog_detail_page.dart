@@ -114,6 +114,7 @@ class _BlogDetailPageState extends State<BlogDetailPage>
   }
 
   void _onProgressChanged(int progress) {
+    if (progress == -1) return; // 忽略测试消息
     if (_readProgress != progress) {
       setState(() {
         _readProgress = progress;
@@ -122,11 +123,15 @@ class _BlogDetailPageState extends State<BlogDetailPage>
   }
 
   void _onScrollChanged(int scrollTop) {
+    if (scrollTop == -1) return; // 忽略测试消息
     final delta = scrollTop - _lastScrollTop;
+    debugPrint('[scroll] scrollTop=$scrollTop last=$_lastScrollTop delta=$delta showBottomBar=$_showBottomBar');
     if (delta.abs() > 10) {
       if (delta > 0 && _showBottomBar) {
+        debugPrint('[scroll] → HIDE bottom bar & meta');
         setState(() => _showBottomBar = false);
       } else if (delta < 0 && !_showBottomBar) {
+        debugPrint('[scroll] → SHOW bottom bar & meta');
         setState(() => _showBottomBar = true);
       }
     }

@@ -44,6 +44,7 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
   String get _injectAllJs => '''
     (function() {
       ${_settingsCtrl.injectCssVariablesJs.replaceAll('(function() {', '').replaceAll('})();', '')}
+      console.log('[WebView] scroll handler setup starting');
       var imgs = document.getElementsByTagName('img');
       var ratio = window.devicePixelRatio || 1;
       for (var i = 0; i < imgs.length; i++) {
@@ -71,6 +72,7 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
           ticking = true;
         }
       };
+      console.log('[WebView] scroll handler setup done');
     })();
   ''';
 
@@ -93,6 +95,14 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
           },
           onPageFinished: (_) {
             _controller.runJavaScript(_injectAllJs);
+            // 发送测试消息确认 JS→Flutter 通道通畅
+            _controller.runJavaScript('''
+              (function() {
+                console.log('[WebView] onPageFinished fired, about to send test message');
+                ReadingProgress.postMessage(JSON.stringify({progress: -1, scrollTop: -1}));
+                console.log('[WebView] test message sent');
+              })();
+            ''');
           },
         ),
       )
@@ -106,10 +116,14 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
       ..addJavaScriptChannel(
         "ReadingProgress",
         onMessageReceived: (msg) {
-          final data = jsonDecode(msg.message) as Map<String, dynamic>;
-          final progress = data['progress'] as int;
-          final scrollNum = data['scrollTop'] as num;
-          final scrollTop = scrollNum.toInt();
+          final raw = msg.message;
+          debugPrint('[ReadingProgress] raw: $raw');
+          final data = jsonDecode(raw) as Map<String, dynamic>;
+          final progressRaw = data['progress'];
+          final scrollTopRaw = data['scrollTop'];
+          final progress = (progressRaw is num) ? progressRaw.toInt() : 0;
+          final scrollTop = (scrollTopRaw is num) ? scrollTopRaw.toInt() : 0;
+          debugPrint('[ReadingProgress] parsed → progress=$progress scrollTop=$scrollTop');
           widget.onProgressChanged?.call(progress);
           widget.onScrollChanged?.call(scrollTop);
         },
