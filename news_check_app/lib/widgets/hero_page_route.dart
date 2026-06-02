@@ -51,7 +51,6 @@ class HeroPhotoOverlayRoute extends PageRouteBuilder {
 /// 图片 Hero 动画中间页
 class _HeroPhotoOverlay extends StatefulWidget {
   const _HeroPhotoOverlay({
-    super.key,
     required this.imageUrl,
     required this.initialRect,
   });
@@ -97,7 +96,7 @@ class _HeroPhotoOverlayState extends State<_HeroPhotoOverlay> {
 }
 
 class _HeroPhotoViewer extends StatefulWidget {
-  const _HeroPhotoViewer({super.key, required this.imageUrl});
+  const _HeroPhotoViewer({required this.imageUrl});
 
   final String imageUrl;
 

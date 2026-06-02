@@ -63,9 +63,6 @@ class PassageUtils {
     double lineSpacing = 1.75,
     bool isSepia = false,
   }) {
-    final bgColor = isSepia ? '#F5E6C8' : (isDark ? '#121212' : '#ffffff');
-    final textColor = isSepia ? '#3E2E1A' : (isDark ? '#e0e0e0' : '#1e293b');
-    final metaColor = isSepia ? '#6B5D4D' : (isDark ? '#94a3b8' : '#64748b');
     final hrColor = isDark ? '#334155' : '#e2e8f0';
     final codeBg = isDark ? '#1e293b' : '#f1f5f9';
     final codeBorder = isDark ? '#475569' : '#cbd5e1';

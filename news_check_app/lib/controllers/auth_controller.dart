@@ -81,7 +81,7 @@ class AuthController extends GetxController with FutureLoadMixin {
         urlFetchStatus.value = UrlFetchStatus.failed;
         urlFetchErrorMsg = "网络错误 ${resp.statusCode}";
       }
-    } on DioException catch(e) {
+    } on DioException {
       authUrl.value = "";
       urlFetchStatus.value = UrlFetchStatus.failed;
       urlFetchErrorMsg = "网络错误";

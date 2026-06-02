@@ -16,7 +16,6 @@ class _DownloadTask {
     required this.id,
     required this.cacheKey,
     required this.url,
-    this.retryCount = 0,
   });
 }
 

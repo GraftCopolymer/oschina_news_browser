@@ -21,7 +21,7 @@ class BlogListController extends GetxController {
     try {
       await _load();
       hasError.value = false;
-    } on DioException catch (e) {
+    } on DioException {
       hasError.value = blogList.isEmpty;
       rethrow;
     } finally {

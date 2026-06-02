@@ -19,7 +19,7 @@ class NewsListController extends GetxController {
     try {
       await _load();
       hasError.value = false;
-    } on DioException catch(e) {
+    } on DioException {
       hasError.value = newsList.isEmpty;
       rethrow;
     } finally {
