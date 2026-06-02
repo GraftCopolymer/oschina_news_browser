@@ -142,3 +142,37 @@ flutter run
 ## 收藏管理
 
 收藏功能在服务端未完全实现（缺少数据库收藏表），前端当前也未调用收藏 API。三个 endpoint 返回桩响应。
+
+## 开发工作流
+
+### 代码质量检查
+
+每完成一项开发任务后，必须运行对应的代码检查工具确认无误：
+
+```bash
+# Flutter 前端 — 检查语法错误和代码质量
+flutter analyze
+
+# Python 后端 — 检查语法错误和代码规范
+cd backend && flake8 src/
+```
+
+`flutter analyze` 必须**零 error、零 warning**（info 级别可忽略）。Python 端 `flake8` 必须**零 error**。
+
+### 测试要求
+
+每完成一项需求开发，必须为新增逻辑编写测试：
+
+```bash
+# Flutter 前端 — 运行单元测试
+flutter test
+
+# Python 后端 — 运行单元测试
+cd backend && pytest src/ -v
+```
+
+- Flutter 测试文件放在 `news_check_app/test/` 目录
+- Python 测试文件放在 `backend/tests/` 目录
+- 测试需覆盖：正常路径、边界条件、错误处理
+- 如果代码重构导致旧测试需要更新，同时更新测试文件
+- 对于 UI 组件，至少验证组件能正常构建，不抛异常
