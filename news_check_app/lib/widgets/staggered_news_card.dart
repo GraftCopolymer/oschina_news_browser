@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:news_check_app/controllers/offline_cache_controller.dart';
 import 'package:news_check_app/models/models.dart';
 import 'package:news_check_app/theme/app_colors.dart';
 
@@ -75,20 +77,38 @@ class StaggeredNewsCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 类型标签
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: textColor.withAlpha(30),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                _newsTypeLabel(news.type),
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: textColor.withAlpha(30),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    _newsTypeLabel(news.type),
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
-              ),
+                const Spacer(),
+                // 已缓存标记
+                if (Get.find<OfflineCacheController>().isCached('news', news.id))
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withAlpha(200),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Text(
+                      '已缓存',
+                      style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w500),
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(height: 8),
             // 标题
