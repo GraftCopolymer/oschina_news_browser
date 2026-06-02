@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:news_check_app/controllers/app_settings_controller.dart';
 import 'package:news_check_app/controllers/auth_controller.dart';
+import 'package:news_check_app/database/database_helper.dart';
 import 'package:news_check_app/network/token_interceptor.dart';
 import 'package:news_check_app/pages/account_page.dart';
 import 'package:news_check_app/pages/login_page.dart';
 import 'package:news_check_app/pages/home_page.dart';
 import 'package:news_check_app/pages/search_page.dart';
 import 'package:news_check_app/services/api_client.dart';
+import 'package:news_check_app/utils/image_download_service.dart';
 import 'package:news_check_app/utils/store_utils.dart';
 import 'package:news_check_app/theme/app_theme.dart';
 import 'package:news_check_app/widgets/bottom_navigation_bar.dart';
@@ -27,6 +29,8 @@ Future<void> main() async {
   _initApi();
   WidgetsFlutterBinding.ensureInitialized();
   await StoreUtils.init();
+  await DatabaseHelper.instance.database;
+  await ImageDownloadService.instance.init();
   final authController = Get.put(AuthController());
   final appSettingsController = Get.put(AppSettingsController());
   // 等待加载用户信息
