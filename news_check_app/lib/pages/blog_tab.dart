@@ -8,6 +8,7 @@ import 'package:get/instance_manager.dart';
 import 'package:news_check_app/controllers/blog_list_controller.dart';
 import 'package:news_check_app/controllers/offline_cache_controller.dart';
 import 'package:news_check_app/pages/blog_detail_page.dart';
+import 'package:news_check_app/pages/cache_management_page.dart';
 import 'package:news_check_app/widgets/shimmer_loading.dart';
 import 'package:news_check_app/theme/app_colors.dart';
 import 'package:news_check_app/widgets/staggered_blog_card.dart';
@@ -52,6 +53,9 @@ class _BlogTabState extends State<BlogTab> with AutomaticKeepAliveClientMixin {
       },
       child: Obx(() {
         if (_blogListController.blogList.isEmpty) {
+          if (_blogListController.hasError.value) {
+            return _buildErrorState();
+          }
           return const ShimmerGrid();
         }
         return RefreshIndicator(
@@ -95,6 +99,56 @@ class _BlogTabState extends State<BlogTab> with AutomaticKeepAliveClientMixin {
           ),
         );
       }),
+    );
+  }
+
+  Widget _buildErrorState() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.wifi_off_rounded, size: 64,
+                color: colorScheme.onSurfaceVariant.withAlpha(100)),
+            const SizedBox(height: 16),
+            Text(
+              "文章获取失败",
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "请检查网络连接后重试",
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant.withAlpha(150),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: () {
+                    _blogListController.refreshList();
+                  },
+                  icon: const Icon(Icons.refresh, size: 18),
+                  label: const Text("重试"),
+                ),
+                const SizedBox(width: 12),
+                FilledButton.icon(
+                  onPressed: () => Get.to(() => const CacheManagementPage()),
+                  icon: const Icon(Icons.storage, size: 18),
+                  label: const Text("查看缓存"),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 
