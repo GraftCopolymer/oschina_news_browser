@@ -5,6 +5,9 @@ import 'package:news_check_app/main.dart';
 import 'package:news_check_app/mixins/detail_image_preview_mixin.dart';
 import 'package:news_check_app/models/models.dart';
 import 'package:news_check_app/pages/common_detail_webview.dart';
+import 'package:news_check_app/database/cache_dao.dart';
+import 'package:news_check_app/database/read_history_dao.dart';
+import 'package:news_check_app/utils/image_download_service.dart';
 import 'package:news_check_app/utils/passage_utils.dart';
 import 'package:news_check_app/widgets/shimmer_loading.dart';
 
@@ -44,7 +47,29 @@ class _NewsDetailPageState extends State<NewsDetailPage>
         return;
       }
       final newsDetail = NewsDetail.fromJson(data['news_detail']);
-      // 构造自适应屏幕的 HTML 内容
+                      // 自动缓存
+                      final wordCount = PassageUtils.countReadableChars(newsDetail.body);
+                      await CacheDao.insert(
+                        type: 'news',
+                        id: newsDetail.id,
+                        title: newsDetail.title,
+                        author: newsDetail.author,
+                        pubDate: newsDetail.pubDate,
+                        body: newsDetail.body,
+                      );
+                      await ReadHistoryDao.recordRead(
+                        type: 'news',
+                        id: newsDetail.id,
+                        title: newsDetail.title,
+                        wordCount: wordCount,
+                      );
+                      // 触发图片下载
+                      final imageUrls = PassageUtils.extractImageUrls(newsDetail.body);
+                      if (imageUrls.isNotEmpty) {
+                        ImageDownloadService.instance
+                            .enqueueImageDownloads('news_${newsDetail.id}', imageUrls);
+                      }
+                      // 构造自适应屏幕的 HTML 内容
       if (mounted) {
         setState(() {
           _detail = newsDetail;

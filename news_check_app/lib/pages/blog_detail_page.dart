@@ -5,6 +5,9 @@ import 'package:news_check_app/main.dart';
 import 'package:news_check_app/mixins/detail_image_preview_mixin.dart';
 import 'package:news_check_app/models/models.dart';
 import 'package:news_check_app/pages/common_detail_webview.dart';
+import 'package:news_check_app/database/cache_dao.dart';
+import 'package:news_check_app/database/read_history_dao.dart';
+import 'package:news_check_app/utils/image_download_service.dart';
 import 'package:news_check_app/utils/passage_utils.dart';
 import 'package:news_check_app/widgets/shimmer_loading.dart';
 
@@ -47,6 +50,26 @@ class _BlogDetailPageState extends State<BlogDetailPage>
 
       // 解析为 BlogDetail
       final blogDetail = BlogDetail.fromJson(data['blog_detail']);
+                      final wordCount = PassageUtils.countReadableChars(blogDetail.body);
+                      await CacheDao.insert(
+                        type: 'blog',
+                        id: blogDetail.id,
+                        title: blogDetail.title,
+                        author: blogDetail.author,
+                        pubDate: blogDetail.pubDate,
+                        body: blogDetail.body,
+                      );
+                      await ReadHistoryDao.recordRead(
+                        type: 'blog',
+                        id: blogDetail.id,
+                        title: blogDetail.title,
+                        wordCount: wordCount,
+                      );
+                      final imageUrls = PassageUtils.extractImageUrls(blogDetail.body);
+                      if (imageUrls.isNotEmpty) {
+                        ImageDownloadService.instance
+                            .enqueueImageDownloads('blog_${blogDetail.id}', imageUrls);
+                      }
 
       if (mounted) {
         setState(() {
