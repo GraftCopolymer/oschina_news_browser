@@ -182,15 +182,65 @@ window.onscroll = function() {
 
 同时利用 `scrollTop` 判断滚动方向，控制底部栏的显示/隐藏（阈值 10px 防抖）。
 
+## 文章目录 TOC
+
+### 实现方式
+
+在 `PassageUtils` 中新增 `enhanceHtmlWithToc()` 方法：
+
+1. 解析 body HTML 中所有的 `<h1>`、`<h2>`、`<h3>` 标签
+2. 为每个标题添加 `id` 属性：`<h2 id="toc-0">原文标题</h2>`
+3. 返回增强后的 HTML + 标题列表（用于 BottomSheet 展示）
+
+```dart
+class TocEntry {
+  final String id;      // "toc-0", "toc-1"
+  final String text;    // 标题文本
+  final int level;      // 1, 2, 3
+}
+
+static (String html, List<TocEntry> toc) enhanceHtmlWithToc(String body) {
+  final entries = <TocEntry>[];
+  int index = 0;
+  final result = body.replaceAllMapped(
+    RegExp(r'<h([1-3])([^>]*)>(.*?)</h\1>', caseSensitive: false, dotAll: true),
+    (match) {
+      final level = int.parse(match.group(1)!);
+      final attrs = match.group(2)!;
+      final text = match.group(3)!;
+      // 去掉已有 id 避免冲突
+      final cleanAttrs = attrs.replaceAll(RegExp(r'\bid\s*=\s*"[^"]*"', caseSensitive: false), '');
+      final id = 'toc-$index';
+      entries.add(TocEntry(id: id, text: _stripHtml(text), level: level));
+      index++;
+      return '<h$level$cleanAttrs id="$id">$text</h$level>';
+    },
+  );
+  return (result, entries);
+}
+```
+
+### 点击目录项
+
+注入 JS 平滑滚动到对应锚点：
+
+```js
+document.getElementById('toc-3').scrollIntoView({behavior: 'smooth', block: 'start'});
+```
+
+### 无标题文章
+
+若解析后 `entries` 为空，BottomSheet 显示"本文无目录"。
+
 ## 底部操作栏 `DetailBottomBar`
 
 ```dart
 class DetailBottomBar extends StatelessWidget {
   final bool isVisible;                // 由外部控制（滚动状态）
   final VoidCallback onFontSettings;    // Aa 字号
+  final VoidCallback onToc;             // ☰ 目录
   final VoidCallback onBookmark;        // ⭐ 收藏
-
-  // ☰ 目录和 ↗ 分享在本次实现中 disable
+  // ↗ 分享在本次实现中 disable
 }
 ```
 
