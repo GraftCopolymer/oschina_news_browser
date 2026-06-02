@@ -77,24 +77,35 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
 
   void _startScrollPolling() {
     _scrollPollTimer?.cancel();
-    _scrollPollTimer = Timer.periodic(const Duration(milliseconds: 200), (_) async {
+    debugPrint('[poll] starting scroll polling...');
+    _scrollPollTimer = Timer.periodic(const Duration(milliseconds: 300), (_) async {
+      debugPrint('[poll] timer fired, inProgress=$_pollingInProgress');
       if (_pollingInProgress) return;
       _pollingInProgress = true;
       try {
+        debugPrint('[poll] calling runJavaScriptReturningResult...');
         final result = await _controller.runJavaScriptReturningResult(_pollJs);
+        debugPrint('[poll] raw result: "$result" (type=${result.runtimeType})');
         if (result is String && result.isNotEmpty) {
-          final data = jsonDecode(result) as Map<String, dynamic>;
-          if (data.containsKey('progress')) {
+          final data = jsonDecode(result);
+          debugPrint('[poll] decoded: $data (type=${data.runtimeType})');
+          if (data is Map<String, dynamic> && data.containsKey('progress')) {
             final progress = (data['progress'] as num?)?.toInt() ?? 0;
             final scrollTop = (data['scrollTop'] as num?)?.toInt() ?? 0;
+            debugPrint('[poll] dispatching progress=$progress scrollTop=$scrollTop');
             widget.onProgressChanged?.call(progress);
             widget.onScrollChanged?.call(scrollTop);
+          } else {
+            debugPrint('[poll] no progress key in result');
           }
+        } else {
+          debugPrint('[poll] result was null/empty or not string');
         }
-      } catch (_) {
-        // 轮询失败静默跳过
+      } catch (e) {
+        debugPrint('[poll] ERROR: $e');
       } finally {
         _pollingInProgress = false;
+        debugPrint('[poll] poll cycle complete');
       }
     });
   }
