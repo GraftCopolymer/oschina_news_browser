@@ -23,9 +23,8 @@ abstract class NewsSimple with _$NewsSimple {
     required String author,
     required String pubDate,
     required String title,
-    required int authorid,
     required int commentCount,
-    required int type,
+    required String type,
   }) = _NewsSimple;
 
   factory NewsSimple.fromJson(Map<String, Object?> json) => _$NewsSimpleFromJson(json);

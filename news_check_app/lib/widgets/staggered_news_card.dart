@@ -3,15 +3,23 @@ import 'package:news_check_app/models/models.dart';
 import 'package:news_check_app/theme/app_colors.dart';
 
 /// 新闻类型映射为中文标签
-String _newsTypeLabel(int type) {
+///
+/// type 取值说明:
+/// - 数字字符串: "0"(链接新闻) "1"(软件推荐) "2"(讨论区) "3"(博客) "4"(普通新闻) "7"(翻译文章)
+/// - 搜索类型字符串: "news"(新闻) "blog"(博客) "project"(开源软件) "post"(帖子/问答)
+String _newsTypeLabel(String type) {
   switch (type) {
-    case 0: return '链接';
-    case 1: return '软件';
-    case 2: return '讨论';
-    case 3: return '博客';
-    case 4: return '新闻';
-    case 7: return '翻译';
-    default: return '其他';
+    case '0': return '链接';
+    case '1': return '软件';
+    case '2': return '讨论';
+    case '3': return '博客';
+    case '4': return '新闻';
+    case '7': return '翻译';
+    case 'news': return '新闻';
+    case 'blog': return '博客';
+    case 'project': return '软件';
+    case 'post': return '帖子';
+    default: return type;
   }
 }
 
@@ -30,9 +38,7 @@ class StaggeredNewsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final colors = isDark
-        ? AppColors.cardGradientDarkForType(news.type)
-        : AppColors.cardGradientForType(news.type);
+    final colors = AppColors.gradientFromTitle(news.title, isDark: isDark);
 
     // 根据渐变亮度决定文字颜色 — 浅色背景用深色文字
     final textColor = colors.first.computeLuminance() > 0.5

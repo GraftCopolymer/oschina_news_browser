@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
-import 'package:news_check_app/controllers/auth_controller.dart';
 import 'package:news_check_app/main.dart';
 import 'package:news_check_app/models/models.dart';
 
@@ -26,15 +25,9 @@ class NewsListController extends GetxController {
   }
 
   Future<void> _load() async {
-    final authController = Get.find<AuthController>();
-    await authController.loadingFuture;
-    final token = authController.token.value;
     final resp = await api.newsListGet(
       page: page.toString(),
       pageSize: pageSize.toString(),
-      headers: {
-        'Authorization': "Bearer $token"
-      }
     );
     // 解析数据
     final body = resp.data as Map<String, dynamic>?;

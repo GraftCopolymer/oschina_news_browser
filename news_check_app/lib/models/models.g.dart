@@ -25,9 +25,8 @@ _NewsSimple _$NewsSimpleFromJson(Map<String, dynamic> json) => _NewsSimple(
   author: json['author'] as String,
   pubDate: json['pubDate'] as String,
   title: json['title'] as String,
-  authorid: (json['authorid'] as num).toInt(),
   commentCount: (json['commentCount'] as num).toInt(),
-  type: (json['type'] as num).toInt(),
+  type: json['type'] as String,
 );
 
 Map<String, dynamic> _$NewsSimpleToJson(_NewsSimple instance) =>
@@ -36,7 +35,6 @@ Map<String, dynamic> _$NewsSimpleToJson(_NewsSimple instance) =>
       'author': instance.author,
       'pubDate': instance.pubDate,
       'title': instance.title,
-      'authorid': instance.authorid,
       'commentCount': instance.commentCount,
       'type': instance.type,
     };

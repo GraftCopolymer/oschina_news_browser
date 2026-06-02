@@ -2,7 +2,7 @@ import json
 from datetime import datetime, timedelta
 
 import httpx
-from fastapi import APIRouter, HTTPException, Query, Path, Body, Security, status
+from fastapi import APIRouter, HTTPException, Query, Path, Body
 from pydantic import StrictStr, Field, StrictInt
 from typing_extensions import Annotated, Optional
 
@@ -12,13 +12,13 @@ from openapi_server.database.models import DBUser
 from openapi_server.database.redis import redis_client
 from openapi_server.impl.utils import (
     success_response, oschina_code2token, error_response, create_app_jwt,
-    fetch_user_info, oschina, get_current_user, headers,
+    fetch_user_info, oschina, headers,
 )
+from openapi_server.impl.auth_utils import UserDep
 from openapi_server.models.api_response import ApiResponse
 from openapi_server.models.auth_token import AuthToken
 from openapi_server.models.collect_request import CollectRequest
-from openapi_server.models.extra_models import NewsSimple, NewsDetail, BlogSimple, BlogDetail, TokenModel
-from openapi_server.security_api import get_token_BearerAuth
+from openapi_server.models.extra_models import NewsSimple, NewsDetail, BlogSimple, BlogDetail
 
 router = APIRouter()
 
@@ -119,7 +119,7 @@ async def auth_oschina_callback_get(
     response_model_by_alias=True,
 )
 async def auth_logout_post(
-    token_BearerAuth: TokenModel = Security(get_token_BearerAuth),
+    user: UserDep,
 ) -> ApiResponse:
     # 客户端退出登录已清除本地存储，服务端无状态 JWT 无需额外操作
     return success_response(data=None, msg="已退出登录")
@@ -140,15 +140,14 @@ async def auth_logout_post(
     response_model_by_alias=True,
 )
 async def news_list_get(
+    user: UserDep,
     catalog: Annotated[
         Optional[StrictStr], Field(description="1=所有 2=综合新闻 3=软件更新")
     ] = Query("1", description="1=所有 2=综合新闻 3=软件更新", alias="catalog"),
     page: Optional[StrictStr] = Query("1", description="", alias="page"),
     page_size: Optional[StrictStr] = Query("20", description="", alias="pageSize"),
-    token_BearerAuth: TokenModel = Security(get_token_BearerAuth),
 ) -> ApiResponse:
     """后端代理OSCHINA接口，返回自定义适配列表"""
-    user = await get_current_user()
     async with httpx.AsyncClient() as client:
         url = oschina("/action/openapi/news_list")
         resp = await client.post(
@@ -182,13 +181,12 @@ async def news_list_get(
     response_model_by_alias=True,
 )
 async def news_detail_id_get(
+    user: UserDep,
     id: Annotated[StrictStr, Field(description="新闻ID")] = Path(
         ..., description="新闻ID"
     ),
-    token_BearerAuth: TokenModel = Security(get_token_BearerAuth),
 ) -> ApiResponse:
     """后端代理OSCHINA接口，返回自定义详情数据"""
-    user = await get_current_user()
     async with httpx.AsyncClient() as client:
         try:
             resp = await client.post(
@@ -227,13 +225,11 @@ async def news_detail_id_get(
     response_model_by_alias=True,
 )
 async def blog_list_get(
+    user: UserDep,
     page: Optional[StrictStr] = Query("1", description="", alias="page"),
     page_size: Optional[StrictStr] = Query("20", description="", alias="pageSize"),
-    token_BearerAuth: TokenModel = Security(get_token_BearerAuth),
 ) -> ApiResponse:
     """后端代理OSCHINA接口，返回自定义适配列表"""
-    user = await get_current_user()
-
     async with httpx.AsyncClient() as client:
         url = oschina("/action/openapi/blog_recommend_list")
         resp = await client.post(
@@ -270,14 +266,12 @@ async def blog_list_get(
     response_model_by_alias=True,
 )
 async def blog_detail_id_get(
+    user: UserDep,
     id: Annotated[StrictStr, Field(description="博客ID")] = Path(
         ..., description="博客ID"
     ),
-    token_BearerAuth: TokenModel = Security(get_token_BearerAuth),
 ) -> ApiResponse:
     """后端代理OSCHINA接口，返回自定义详情数据"""
-    user = await get_current_user()
-
     async with httpx.AsyncClient() as client:
         try:
             resp = await client.post(
@@ -323,6 +317,7 @@ async def blog_detail_id_get(
     response_model_by_alias=True,
 )
 async def search_get(
+    user: UserDep,
     q: Annotated[StrictStr, Field(description="搜索关键词")] = Query(
         None, description="搜索关键词", alias="q"
     ),
@@ -330,12 +325,10 @@ async def search_get(
         Optional[StrictStr],
         Field(description="搜索类型, 取值 news, blog, project, post"),
     ] = Query("news", description="搜索类型, 取值 news, blog, project, post", alias="catalog"),
-    page: Optional[StrictInt] = Query(1, description="", alias="page"),
-    page_size: Optional[StrictInt] = Query(20, description="", alias="pageSize"),
-    token_BearerAuth: TokenModel = Security(get_token_BearerAuth),
+    page: Optional[int] = Query(1, description="", alias="page"),
+    page_size: Optional[int] = Query(20, description="", alias="pageSize"),
 ) -> ApiResponse:
     """支持搜索新闻、博客，后端代理OSCHINA搜索接口"""
-    user = await get_current_user()
     async with httpx.AsyncClient() as client:
         try:
             resp = await client.post(
@@ -378,12 +371,11 @@ async def search_get(
     response_model_by_alias=True,
 )
 async def collect_add_post(
+    user: UserDep,
     collect_request: CollectRequest = Body(None, description=""),
-    token_BearerAuth: TokenModel = Security(get_token_BearerAuth),
 ) -> ApiResponse:
     """保存收藏类型+ID，后端关联用户"""
     # TODO: 实现后端收藏逻辑（需要添加收藏数据库表）
-    # user = await get_current_user()
     return success_response(data=None, msg="收藏成功（暂未持久化）")
 
 
@@ -398,8 +390,8 @@ async def collect_add_post(
     response_model_by_alias=True,
 )
 async def collect_remove_post(
+    user: UserDep,
     collect_request: CollectRequest = Body(None, description=""),
-    token_BearerAuth: TokenModel = Security(get_token_BearerAuth),
 ) -> ApiResponse:
     # TODO: 实现后端取消收藏逻辑
     return success_response(data=None, msg="已取消收藏（暂未持久化）")
@@ -416,9 +408,9 @@ async def collect_remove_post(
     response_model_by_alias=True,
 )
 async def collect_list_get(
+    user: UserDep,
     page: Optional[StrictInt] = Query(1, description="", alias="page"),
     page_size: Optional[StrictInt] = Query(20, description="", alias="pageSize"),
-    token_BearerAuth: TokenModel = Security(get_token_BearerAuth),
 ) -> ApiResponse:
     """后端根据收藏ID批量请求OSCHINA，返回列表数据"""
     # TODO: 实现后端收藏列表逻辑

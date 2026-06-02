@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:news_check_app/controllers/auth_controller.dart';
 import 'package:news_check_app/main.dart';
 import 'package:news_check_app/mixins/detail_image_preview_mixin.dart';
 import 'package:news_check_app/models/models.dart';
-import 'package:news_check_app/pages/common_detail_markdown.dart';
 import 'package:news_check_app/pages/common_detail_webview.dart';
 import 'package:news_check_app/utils/passage_utils.dart';
 import 'package:news_check_app/widgets/shimmer_loading.dart';
@@ -32,12 +29,10 @@ class _BlogDetailPageState extends State<BlogDetailPage>
     setState(() {
       _loading = true;
     });
-    final token = Get.find<AuthController>().token.value;
     try {
       // 调用博客详情 API
       final resp = await api.blogDetailIdGet(
         id: widget.blogId,
-        headers: {'Authorization': 'Bearer $token'},
       );
       final body = resp.data as Map<String, dynamic>?;
       if (resp.statusCode != 200 || body == null) {
@@ -92,34 +87,19 @@ class _BlogDetailPageState extends State<BlogDetailPage>
         ),
       );
     } else {
-      switch (PassageUtils.detectType(_detail!.body)) {
-        case ContentType.html:
-          {
-            return CommonDetailWebView(
-              htmlContent: PassageUtils.htmlWrap(
-                title: _detail!.title,
-                author: _detail!.author,
-                pubDate: _detail!.pubDate,
-                body: _detail!.body,
-              ),
-              webViewKey: _webViewKey,
-              onImageClick: (data) {
-                handleImageClick(context, _webViewKey, data);
-              },
-            );
-          }
-        case ContentType.markdown:
-          {
-            return CommonDetailMarkdown(
-              content: PassageUtils.markdownWrap(
-                title: _detail!.title,
-                author: _detail!.author,
-                pubDate: _detail!.pubDate,
-                body: _detail!.body,
-              ),
-            );
-          }
-      }
+      return CommonDetailWebView(
+        htmlContent: PassageUtils.wrapBodyForWebView(
+          title: _detail!.title,
+          author: _detail!.author,
+          pubDate: _detail!.pubDate,
+          body: _detail!.body,
+          isDark: Get.isDarkMode,
+        ),
+        webViewKey: _webViewKey,
+        onImageClick: (data) {
+          handleImageClick(context, _webViewKey, data);
+        },
+      );
     }
   }
 

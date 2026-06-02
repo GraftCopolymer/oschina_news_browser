@@ -123,7 +123,7 @@ flutter run
 
 ## OSCHINA API 文档
 
-- **本地副本**: `backend/oschina接口文档.html` — 这是一个 OpenAPI 3.0.1 规范的 HTML 文档，包含 OSCHINA 所有公开 API 端点的完整定义（请求参数、响应字段、类型说明）。
+- **本地副本**: `backend/oschina_api文档.md` — 这是一个 OpenAPI 3.0.1 规范的 HTML 文档，包含 OSCHINA 所有公开 API 端点的完整定义（请求参数、响应字段、类型说明）。
 - **重要规则**: 在涉及 OSCHINA API 的响应字段、请求参数时，必须先查阅此文档确认。**不要猜测 API 字段名或假定存在某字段**（例如 `news_list` 接口不返回任何图片/封面图字段，而 `active_list` 接口返回 `tweetImage`）。如果文档中找不到所需信息，应向用户明确列出缺失了哪些信息。
 - **后端当前实现**: `impl/default_api_impl.py` 中通过 `httpx` 调用 OSCHINA API，使用 `NewsSimple.model_validate(news)` 和 `BlogSimple.model_validate(blog)` 从原始 JSON 提取字段到 Pydantic 模型，忽略未定义字段。
 

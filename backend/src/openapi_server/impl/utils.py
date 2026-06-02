@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-
 import httpx
 import jwt
 from fastapi import HTTPException
@@ -7,12 +5,7 @@ from pydantic import StrictStr, StrictInt
 from typing_extensions import Optional, Dict, Any
 
 from openapi_server.config.config import get_settings
-from openapi_server.context import current_token
-from openapi_server.database.database import SessionLocal
-from openapi_server.database.models import DBUser
-from openapi_server.database.redis import redis_client
 from openapi_server.models.api_response import ApiResponse
-from openapi_server.models.extra_models import TokenModel, User
 
 headers = {
     "User-Agent": "Mozilla/5.0" # 不加这个 OSCHINA 不会允许访问
@@ -67,30 +60,3 @@ async def fetch_user_info(access_token: StrictStr):
         if resp.status_code != 200:
             raise HTTPException(400, "获取用户信息失败")
         return resp.json()
-
-def get_current_token_model() -> TokenModel:
-    token_model = current_token.get()
-    if not token_model:
-        raise HTTPException(status_code=401, detail="未提供用户 Token")
-    return token_model
-
-async def get_current_user() -> User:
-    token_model = get_current_token_model()
-    # 从 Redis 中寻找用户信息
-    oschina_token_string: Optional[StrictStr] = redis_client.get(token_model.sub)
-    user_uid = int(token_model.sub)
-    user: Optional[User] = None
-    if oschina_token_string: # Redis中有缓存
-        print("从 Redis 中读取用户成功")
-        with SessionLocal() as db:
-            db_user: DBUser = db.query(DBUser).filter(DBUser.id == user_uid).first()
-            # 数据库中肯定存在该用户
-            user = User.model_validate(db_user)
-    else: # Redis 中无缓存
-         print("从 Redis 中读取用户失败, 尝试在数据库查找")
-         with SessionLocal() as db:
-            db_user: Optional[DBUser] = db.query(DBUser).filter(DBUser.id == user_uid).first()
-            if not db_user:
-                raise HTTPException(status_code=401, detail="用户不存在")
-            user = User.model_validate(db_user)
-    return user

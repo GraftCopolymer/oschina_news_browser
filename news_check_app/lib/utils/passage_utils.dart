@@ -1,11 +1,10 @@
+import 'package:markdown/markdown.dart' as md;
+
 enum ContentType { html, markdown }
 
 class PassageUtils {
   static ContentType detectType(String content) {
     // 匹配 <p> 标签（包括带属性的 <p ...>）或 </p> 结束标签
-    // < 表示开始，(?:...) 是非捕获分组
-    // p(?:\s+[^>]+)? 匹配 p 字母及其后面可能跟随的空格和属性
-    // |/p 匹配闭合标签 /p
     final pTagRegex = RegExp(r'<(?:p(?:\s+[^>]+)?|/p)>', caseSensitive: false);
 
     if (pTagRegex.hasMatch(content)) {
@@ -16,34 +15,137 @@ class PassageUtils {
     return ContentType.markdown;
   }
 
-  /// 用来包裹 HTML 文章
+  /// 统一入口：检测内容类型 → 若为 Markdown 则转 HTML → 包裹为完整 WebView HTML
+  ///
+  /// [isDark] 由调用方传入（例如 Get.isDarkMode），决定 WebView 内配色，
+  /// 避免 WebView 跟随系统偏好导致 App 手动切换后不一致。
+  static String wrapBodyForWebView({
+    required String title,
+    required String author,
+    required String pubDate,
+    required String body,
+    required bool isDark,
+  }) {
+    // Markdown → HTML 转换
+    final htmlBody = detectType(body) == ContentType.markdown
+        ? md.markdownToHtml(body)
+        : body;
+
+    return htmlWrap(
+      title: title,
+      author: author,
+      pubDate: pubDate,
+      body: htmlBody,
+      isDark: isDark,
+    );
+  }
+
+  /// 包裹为完整 HTML 页面，[isDark] 控制配色而非 @media query
   static String htmlWrap({
     required String title,
     required String author,
     required String pubDate,
     required String body,
+    bool isDark = false,
   }) {
+    final bgColor = isDark ? '#121212' : '#ffffff';
+    final textColor = isDark ? '#e0e0e0' : '#1e293b';
+    final metaColor = isDark ? '#94a3b8' : '#64748b';
+    final hrColor = isDark ? '#334155' : '#e2e8f0';
+    final codeBg = isDark ? '#1e293b' : '#f1f5f9';
+    final codeBorder = isDark ? '#475569' : '#cbd5e1';
+    final linkColor = isDark ? '#67e8f9' : '#0d9488';
+    final blockquoteBorder = isDark ? '#14b8a6' : '#0d9488';
+    final blockquoteBg = isDark ? '#1e293b' : '#f0fdfa';
+
     return """
       <html>
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="color-scheme" content="light dark">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0">
         <style>
-          img { max-width: 100%; height: auto; display: block; margin: 10px auto; }
-          body { word-wrap: break-word; padding: 12px; font-family: sans-serif; line-height: 1.6; }
-          .meta { color: grey; display: flex; justify-content: space-between; font-size: 14px; }
-          h1 { font-size: 22px; margin-bottom: 10px; }
-          /* 使用 CSS 媒体查询或者直接根据变量生成样式 */
-          @media (prefers-color-scheme: dark) {
-            body { 
-              background-color: #121212; 
-              color: #e0e0e0; 
-            }
+          * { box-sizing: border-box; }
+          body {
+            font-family: -apple-system, 'PingFang SC', 'Noto Sans CJK SC', sans-serif;
+            font-size: 16px;
+            line-height: 1.75;
+            word-wrap: break-word;
+            padding: 16px;
+            margin: 0;
+            background-color: $bgColor;
+            color: $textColor;
+          }
+          h1 { font-size: 22px; margin: 16px 0 8px; font-weight: 700; line-height: 1.3; }
+          h2 { font-size: 19px; margin: 20px 0 8px; font-weight: 600; }
+          h3 { font-size: 17px; margin: 16px 0 6px; font-weight: 600; }
+          p { margin: 10px 0; }
+          a { color: $linkColor; text-decoration: none; }
+          a:hover { text-decoration: underline; }
+          img {
+            max-width: 100%; height: auto;
+            display: block; margin: 12px auto;
+            border-radius: 8px;
+            cursor: pointer;
+          }
+          hr {
+            border: none;
+            height: 1px;
+            background-color: $hrColor;
+            margin: 20px 0;
+          }
+          pre {
+            background-color: $codeBg;
+            border: 1px solid $codeBorder;
+            border-radius: 8px;
+            padding: 14px;
+            overflow-x: auto;
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+          }
+          code {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 14px;
+            background-color: $codeBg;
+            padding: 2px 6px;
+            border-radius: 4px;
+          }
+          pre code {
+            background: none;
+            padding: 0;
+            border-radius: 0;
+          }
+          blockquote {
+            margin: 12px 0;
+            padding: 10px 16px;
+            border-left: 4px solid $blockquoteBorder;
+            background-color: $blockquoteBg;
+            border-radius: 0 6px 6px 0;
+          }
+          table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0;
+          }
+          th, td {
+            border: 1px solid $hrColor;
+            padding: 8px 12px;
+            text-align: left;
+          }
+          th { background-color: $codeBg; font-weight: 600; }
+          ul, ol { padding-left: 24px; margin: 8px 0; }
+          li { margin: 4px 0; }
+          .meta {
+            color: $metaColor;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 4px;
           }
         </style>
       </head>
       <body>
-        <h1>$title</h1>
+        ${title.isEmpty ? '' : '<h1>$title</h1>'}
         <div class="meta">
           <span>作者: $author</span>
           <span>$pubDate</span>
@@ -55,7 +157,8 @@ class PassageUtils {
     """;
   }
 
-  /// 用来包裹 Markdown 文章
+  /// 用来包裹 Markdown 文章（已废弃，保留仅用于过渡参考）
+  @Deprecated('使用 wrapBodyForWebView 代替')
   static String markdownWrap({
     required String title,
     required String author,

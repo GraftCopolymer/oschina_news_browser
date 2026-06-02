@@ -22,9 +22,7 @@ class StaggeredBlogCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final colors = isDark
-        ? AppColors.cardGradientDarkForType(blog.type)
-        : AppColors.cardGradientForType(blog.type);
+    final colors = AppColors.gradientFromTitle(blog.title, isDark: isDark);
 
     // 根据渐变亮度决定文字颜色 — 浅色背景用深色文字
     final textColor = colors.first.computeLuminance() > 0.5

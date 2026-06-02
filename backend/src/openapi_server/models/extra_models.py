@@ -27,13 +27,15 @@ class User(BaseModel):
     oschina_refresh_token: str
 
 class NewsSimple(BaseModel):
+    model_config = ConfigDict(coerce_numbers_to_str=True)
+
     id: int
     author: str
     pubDate: str
     title: str
     authorid: int
     commentCount: int
-    type: int
+    type: str
 
 class NewsDetail(BaseModel):
     id: int

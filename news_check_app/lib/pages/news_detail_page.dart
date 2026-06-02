@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:get/instance_manager.dart';
-import 'package:news_check_app/controllers/auth_controller.dart';
 import 'package:news_check_app/main.dart';
 import 'package:news_check_app/mixins/detail_image_preview_mixin.dart';
 import 'package:news_check_app/models/models.dart';
@@ -31,11 +29,9 @@ class _NewsDetailPageState extends State<NewsDetailPage>
     setState(() {
       _loading = true;
     });
-    final token = Get.find<AuthController>().token.value;
     try {
       final resp = await api.newsDetailIdGet(
         id: widget.newsId,
-        headers: {'Authorization': 'Bearer $token'},
       );
       final body = resp.data as Map<String, dynamic>?;
       if (resp.statusCode != 200 || body == null) {
@@ -89,11 +85,12 @@ class _NewsDetailPageState extends State<NewsDetailPage>
       );
     } else {
       return CommonDetailWebView(
-        htmlContent: PassageUtils.htmlWrap(
+        htmlContent: PassageUtils.wrapBodyForWebView(
           title: _detail!.title,
           author: _detail!.author,
           pubDate: _detail!.pubDate,
           body: _detail!.body,
+          isDark: Get.isDarkMode,
         ),
         webViewKey: _webViewKey,
         onImageClick: (data) {

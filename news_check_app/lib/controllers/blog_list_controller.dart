@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
-import 'package:news_check_app/controllers/auth_controller.dart';
 import 'package:news_check_app/main.dart';
 import 'package:news_check_app/models/models.dart';
 
@@ -29,17 +28,9 @@ class BlogListController extends GetxController {
   }
 
   Future<void> _load() async {
-    final authController = Get.find<AuthController>();
-    // 确保 AuthController 初始化完成
-    await authController.loadingFuture;
-    final token = authController.token.value;
-
     final resp = await api.blogListGet(
       page: page.toString(),
       pageSize: pageSize.toString(),
-      headers: {
-        'Authorization': "Bearer $token"
-      }
     );
 
     // 解析数据

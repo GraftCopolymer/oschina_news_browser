@@ -287,7 +287,7 @@ as String,
 /// @nodoc
 mixin _$NewsSimple {
 
- int get id; String get author; String get pubDate; String get title; int get authorid; int get commentCount; int get type;
+ int get id; String get author; String get pubDate; String get title; int get commentCount; String get type;
 /// Create a copy of NewsSimple
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -300,16 +300,16 @@ $NewsSimpleCopyWith<NewsSimple> get copyWith => _$NewsSimpleCopyWithImpl<NewsSim
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is NewsSimple&&(identical(other.id, id) || other.id == id)&&(identical(other.author, author) || other.author == author)&&(identical(other.pubDate, pubDate) || other.pubDate == pubDate)&&(identical(other.title, title) || other.title == title)&&(identical(other.authorid, authorid) || other.authorid == authorid)&&(identical(other.commentCount, commentCount) || other.commentCount == commentCount)&&(identical(other.type, type) || other.type == type));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NewsSimple&&(identical(other.id, id) || other.id == id)&&(identical(other.author, author) || other.author == author)&&(identical(other.pubDate, pubDate) || other.pubDate == pubDate)&&(identical(other.title, title) || other.title == title)&&(identical(other.commentCount, commentCount) || other.commentCount == commentCount)&&(identical(other.type, type) || other.type == type));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,author,pubDate,title,authorid,commentCount,type);
+int get hashCode => Object.hash(runtimeType,id,author,pubDate,title,commentCount,type);
 
 @override
 String toString() {
-  return 'NewsSimple(id: $id, author: $author, pubDate: $pubDate, title: $title, authorid: $authorid, commentCount: $commentCount, type: $type)';
+  return 'NewsSimple(id: $id, author: $author, pubDate: $pubDate, title: $title, commentCount: $commentCount, type: $type)';
 }
 
 
@@ -320,7 +320,7 @@ abstract mixin class $NewsSimpleCopyWith<$Res>  {
   factory $NewsSimpleCopyWith(NewsSimple value, $Res Function(NewsSimple) _then) = _$NewsSimpleCopyWithImpl;
 @useResult
 $Res call({
- int id, String author, String pubDate, String title, int authorid, int commentCount, int type
+ int id, String author, String pubDate, String title, int commentCount, String type
 });
 
 
@@ -337,16 +337,15 @@ class _$NewsSimpleCopyWithImpl<$Res>
 
 /// Create a copy of NewsSimple
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? author = null,Object? pubDate = null,Object? title = null,Object? authorid = null,Object? commentCount = null,Object? type = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? author = null,Object? pubDate = null,Object? title = null,Object? commentCount = null,Object? type = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,author: null == author ? _self.author : author // ignore: cast_nullable_to_non_nullable
 as String,pubDate: null == pubDate ? _self.pubDate : pubDate // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,authorid: null == authorid ? _self.authorid : authorid // ignore: cast_nullable_to_non_nullable
-as int,commentCount: null == commentCount ? _self.commentCount : commentCount // ignore: cast_nullable_to_non_nullable
+as String,commentCount: null == commentCount ? _self.commentCount : commentCount // ignore: cast_nullable_to_non_nullable
 as int,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as int,
+as String,
   ));
 }
 
@@ -431,10 +430,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String author,  String pubDate,  String title,  int authorid,  int commentCount,  int type)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String author,  String pubDate,  String title,  int commentCount,  String type)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _NewsSimple() when $default != null:
-return $default(_that.id,_that.author,_that.pubDate,_that.title,_that.authorid,_that.commentCount,_that.type);case _:
+return $default(_that.id,_that.author,_that.pubDate,_that.title,_that.commentCount,_that.type);case _:
   return orElse();
 
 }
@@ -452,10 +451,10 @@ return $default(_that.id,_that.author,_that.pubDate,_that.title,_that.authorid,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String author,  String pubDate,  String title,  int authorid,  int commentCount,  int type)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String author,  String pubDate,  String title,  int commentCount,  String type)  $default,) {final _that = this;
 switch (_that) {
 case _NewsSimple():
-return $default(_that.id,_that.author,_that.pubDate,_that.title,_that.authorid,_that.commentCount,_that.type);case _:
+return $default(_that.id,_that.author,_that.pubDate,_that.title,_that.commentCount,_that.type);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -472,10 +471,10 @@ return $default(_that.id,_that.author,_that.pubDate,_that.title,_that.authorid,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String author,  String pubDate,  String title,  int authorid,  int commentCount,  int type)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String author,  String pubDate,  String title,  int commentCount,  String type)?  $default,) {final _that = this;
 switch (_that) {
 case _NewsSimple() when $default != null:
-return $default(_that.id,_that.author,_that.pubDate,_that.title,_that.authorid,_that.commentCount,_that.type);case _:
+return $default(_that.id,_that.author,_that.pubDate,_that.title,_that.commentCount,_that.type);case _:
   return null;
 
 }
@@ -487,16 +486,15 @@ return $default(_that.id,_that.author,_that.pubDate,_that.title,_that.authorid,_
 @JsonSerializable()
 
 class _NewsSimple implements NewsSimple {
-  const _NewsSimple({required this.id, required this.author, required this.pubDate, required this.title, required this.authorid, required this.commentCount, required this.type});
+  const _NewsSimple({required this.id, required this.author, required this.pubDate, required this.title, required this.commentCount, required this.type});
   factory _NewsSimple.fromJson(Map<String, dynamic> json) => _$NewsSimpleFromJson(json);
 
 @override final  int id;
 @override final  String author;
 @override final  String pubDate;
 @override final  String title;
-@override final  int authorid;
 @override final  int commentCount;
-@override final  int type;
+@override final  String type;
 
 /// Create a copy of NewsSimple
 /// with the given fields replaced by the non-null parameter values.
@@ -511,16 +509,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NewsSimple&&(identical(other.id, id) || other.id == id)&&(identical(other.author, author) || other.author == author)&&(identical(other.pubDate, pubDate) || other.pubDate == pubDate)&&(identical(other.title, title) || other.title == title)&&(identical(other.authorid, authorid) || other.authorid == authorid)&&(identical(other.commentCount, commentCount) || other.commentCount == commentCount)&&(identical(other.type, type) || other.type == type));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NewsSimple&&(identical(other.id, id) || other.id == id)&&(identical(other.author, author) || other.author == author)&&(identical(other.pubDate, pubDate) || other.pubDate == pubDate)&&(identical(other.title, title) || other.title == title)&&(identical(other.commentCount, commentCount) || other.commentCount == commentCount)&&(identical(other.type, type) || other.type == type));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,author,pubDate,title,authorid,commentCount,type);
+int get hashCode => Object.hash(runtimeType,id,author,pubDate,title,commentCount,type);
 
 @override
 String toString() {
-  return 'NewsSimple(id: $id, author: $author, pubDate: $pubDate, title: $title, authorid: $authorid, commentCount: $commentCount, type: $type)';
+  return 'NewsSimple(id: $id, author: $author, pubDate: $pubDate, title: $title, commentCount: $commentCount, type: $type)';
 }
 
 
@@ -531,7 +529,7 @@ abstract mixin class _$NewsSimpleCopyWith<$Res> implements $NewsSimpleCopyWith<$
   factory _$NewsSimpleCopyWith(_NewsSimple value, $Res Function(_NewsSimple) _then) = __$NewsSimpleCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String author, String pubDate, String title, int authorid, int commentCount, int type
+ int id, String author, String pubDate, String title, int commentCount, String type
 });
 
 
@@ -548,16 +546,15 @@ class __$NewsSimpleCopyWithImpl<$Res>
 
 /// Create a copy of NewsSimple
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? author = null,Object? pubDate = null,Object? title = null,Object? authorid = null,Object? commentCount = null,Object? type = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? author = null,Object? pubDate = null,Object? title = null,Object? commentCount = null,Object? type = null,}) {
   return _then(_NewsSimple(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,author: null == author ? _self.author : author // ignore: cast_nullable_to_non_nullable
 as String,pubDate: null == pubDate ? _self.pubDate : pubDate // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,authorid: null == authorid ? _self.authorid : authorid // ignore: cast_nullable_to_non_nullable
-as int,commentCount: null == commentCount ? _self.commentCount : commentCount // ignore: cast_nullable_to_non_nullable
+as String,commentCount: null == commentCount ? _self.commentCount : commentCount // ignore: cast_nullable_to_non_nullable
 as int,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as int,
+as String,
   ));
 }
 
