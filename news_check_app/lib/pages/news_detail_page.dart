@@ -302,6 +302,7 @@ class _NewsDetailPageState extends State<NewsDetailPage>
       webViewKey: _webViewKey,
       tocEntries: _tocEntries,
       scrollToTocNotifier: _scrollToTocNotifier,
+      onTap: () => setState(() => _showBottomBar = !_showBottomBar),
       onImageClick: (data) {
         handleImageClick(context, _webViewKey, data);
       },

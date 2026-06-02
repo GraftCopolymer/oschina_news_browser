@@ -16,6 +16,7 @@ class CommonDetailWebView extends StatefulWidget {
     this.onImageClick,
     this.onProgressChanged,
     this.onScrollChanged,
+    this.onTap,
     required this.tocEntries,
     this.scrollToTocNotifier,
   });
@@ -25,6 +26,7 @@ class CommonDetailWebView extends StatefulWidget {
   final Function(Map<String, dynamic> data)? onImageClick;
   final Function(int progress)? onProgressChanged;
   final Function(int scrollTop)? onScrollChanged;
+  final VoidCallback? onTap;
   final List<TocEntry> tocEntries;
   final ValueNotifier<String?>? scrollToTocNotifier;
 
@@ -41,10 +43,11 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
     _controller.runJavaScript(_settingsCtrl.injectCssVariablesJs);
   }
 
-  /// 注入图片点击 + 滚动检测（使用 window.addEventListener 替代 onscroll）
+  /// 注入图片点击 + 滚动检测 + 点击切换 UI
   String get _injectAllJs => '''
     (function() {
       ${_settingsCtrl.injectCssVariablesJs.replaceAll('(function() {', '').replaceAll('})();', '')}
+      // 图片点击放大
       var imgs = document.getElementsByTagName('img');
       var ratio = window.devicePixelRatio || 1;
       for (var i = 0; i < imgs.length; i++) {
@@ -57,6 +60,7 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
           }));
         };
       }
+      // 滚动检测
       window.addEventListener('scroll', function() {
         var scrollTop = window.scrollY;
         var scrollHeight = document.body.scrollHeight;
@@ -65,6 +69,13 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
         var progress = diff > 0 ? Math.round(scrollTop / diff * 100) : 0;
         ReadingProgress.postMessage(JSON.stringify({progress: progress, scrollTop: scrollTop}));
       }, {passive: true});
+      // 单击切换 UI（排除 A/IMG 避免冲突）
+      document.addEventListener('click', function(e) {
+        var tag = e.target.tagName;
+        if (tag !== 'A' && tag !== 'IMG' && tag !== 'BUTTON') {
+          WebViewTap.postMessage('tap');
+        }
+      });
     })();
   ''';
 
@@ -105,6 +116,12 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
           final scrollTop = (data['scrollTop'] as num?)?.toInt() ?? 0;
           widget.onProgressChanged?.call(progress);
           widget.onScrollChanged?.call(scrollTop);
+        },
+      )
+      ..addJavaScriptChannel(
+        "WebViewTap",
+        onMessageReceived: (_) {
+          widget.onTap?.call();
         },
       )
       ..loadHtmlString(widget.htmlContent);

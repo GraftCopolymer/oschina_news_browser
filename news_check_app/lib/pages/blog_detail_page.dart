@@ -297,6 +297,7 @@ class _BlogDetailPageState extends State<BlogDetailPage>
       webViewKey: _webViewKey,
       tocEntries: _tocEntries,
       scrollToTocNotifier: _scrollToTocNotifier,
+      onTap: () => setState(() => _showBottomBar = !_showBottomBar),
       onImageClick: (data) {
         handleImageClick(context, _webViewKey, data);
       },
