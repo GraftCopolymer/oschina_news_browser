@@ -6,6 +6,7 @@ import 'package:news_check_app/controllers/auth_controller.dart';
 import 'package:news_check_app/pages/about_page.dart';
 import 'package:news_check_app/pages/login_page.dart';
 import 'package:news_check_app/pages/settings_page.dart';
+import 'package:news_check_app/pages/stats_page.dart';
 import 'package:news_check_app/theme/app_colors.dart';
 
 class AccountPage extends StatefulWidget {
@@ -177,6 +178,10 @@ class _AccountPageState extends State<AccountPage> {
                   const Divider(height: 1, indent: 56),
                   _listTile(Icons.palette_outlined, "主题设置", () {
                     Get.to(() => const SettingsPage());
+                  }),
+                  const Divider(height: 1, indent: 56),
+                  _listTile(Icons.bar_chart, "阅读统计", () {
+                    Get.to(() => const StatsPage());
                   }),
                   const Divider(height: 1, indent: 56),
                   _listTile(Icons.info_outline, "关于", () {
