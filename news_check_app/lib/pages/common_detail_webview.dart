@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -36,6 +37,8 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
   late final WebViewController _controller;
   final _settingsCtrl = Get.find<ReadingSettingsController>();
   late final Worker _fontSizeWorker, _lineSpacingWorker, _readingBgWorker;
+  Timer? _scrollPollTimer;
+  bool _pollingInProgress = false;
 
   void injectSettings() {
     _controller.runJavaScript(_settingsCtrl.injectCssVariablesJs);
@@ -44,7 +47,6 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
   String get _injectAllJs => '''
     (function() {
       ${_settingsCtrl.injectCssVariablesJs.replaceAll('(function() {', '').replaceAll('})();', '')}
-      console.log('[WebView] scroll handler setup starting');
       var imgs = document.getElementsByTagName('img');
       var ratio = window.devicePixelRatio || 1;
       for (var i = 0; i < imgs.length; i++) {
@@ -57,24 +59,45 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
           }));
         };
       }
-      var ticking = false;
-      window.onscroll = function() {
-        if (!ticking) {
-          window.requestAnimationFrame(function() {
-            var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-            var scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            if (scrollHeight > 0) {
-              var progress = Math.round(scrollTop / scrollHeight * 100);
-              ReadingProgress.postMessage(JSON.stringify({progress: progress, scrollTop: scrollTop}));
-            }
-            ticking = false;
-          });
-          ticking = true;
-        }
-      };
-      console.log('[WebView] scroll handler setup done');
     })();
   ''';
+
+  /// 轮询 WebView 滚动位置（替代不稳定的 window.onscroll）
+  String get _pollJs => '''
+    (function() {
+      var st = document.documentElement.scrollTop || document.body.scrollTop;
+      var sh = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      if (sh > 0) {
+        var p = Math.round(st / sh * 100);
+        return JSON.stringify({progress: p, scrollTop: st});
+      }
+      return '{}';
+    })();
+  ''';
+
+  void _startScrollPolling() {
+    _scrollPollTimer?.cancel();
+    _scrollPollTimer = Timer.periodic(const Duration(milliseconds: 200), (_) async {
+      if (_pollingInProgress) return;
+      _pollingInProgress = true;
+      try {
+        final result = await _controller.runJavaScriptReturningResult(_pollJs);
+        if (result is String && result.isNotEmpty) {
+          final data = jsonDecode(result) as Map<String, dynamic>;
+          if (data.containsKey('progress')) {
+            final progress = (data['progress'] as num?)?.toInt() ?? 0;
+            final scrollTop = (data['scrollTop'] as num?)?.toInt() ?? 0;
+            widget.onProgressChanged?.call(progress);
+            widget.onScrollChanged?.call(scrollTop);
+          }
+        }
+      } catch (_) {
+        // 轮询失败静默跳过
+      } finally {
+        _pollingInProgress = false;
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -95,14 +118,7 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
           },
           onPageFinished: (_) {
             _controller.runJavaScript(_injectAllJs);
-            // 发送测试消息确认 JS→Flutter 通道通畅
-            _controller.runJavaScript('''
-              (function() {
-                console.log('[WebView] onPageFinished fired, about to send test message');
-                ReadingProgress.postMessage(JSON.stringify({progress: -1, scrollTop: -1}));
-                console.log('[WebView] test message sent');
-              })();
-            ''');
+            _startScrollPolling();
           },
         ),
       )
@@ -116,14 +132,9 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
       ..addJavaScriptChannel(
         "ReadingProgress",
         onMessageReceived: (msg) {
-          final raw = msg.message;
-          debugPrint('[ReadingProgress] raw: $raw');
-          final data = jsonDecode(raw) as Map<String, dynamic>;
-          final progressRaw = data['progress'];
-          final scrollTopRaw = data['scrollTop'];
-          final progress = (progressRaw is num) ? progressRaw.toInt() : 0;
-          final scrollTop = (scrollTopRaw is num) ? scrollTopRaw.toInt() : 0;
-          debugPrint('[ReadingProgress] parsed → progress=$progress scrollTop=$scrollTop');
+          final data = jsonDecode(msg.message) as Map<String, dynamic>;
+          final progress = (data['progress'] as num?)?.toInt() ?? 0;
+          final scrollTop = (data['scrollTop'] as num?)?.toInt() ?? 0;
           widget.onProgressChanged?.call(progress);
           widget.onScrollChanged?.call(scrollTop);
         },
@@ -148,6 +159,7 @@ class _CommonDetailWebViewState extends State<CommonDetailWebView> {
   @override
   void dispose() {
     widget.scrollToTocNotifier?.removeListener(_onScrollToTocCommand);
+    _scrollPollTimer?.cancel();
     _fontSizeWorker();
     _lineSpacingWorker();
     _readingBgWorker();
