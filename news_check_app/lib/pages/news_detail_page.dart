@@ -222,53 +222,62 @@ class _NewsDetailPageState extends State<NewsDetailPage>
                 )
               : Stack(
                   children: [
-                    Column(
-                      children: [
-                        DetailProgressBar(progress: _readProgress / 100.0),
-                        AnimatedSize(
-                          duration: const Duration(milliseconds: 200),
-                          curve: Curves.easeInOut,
-                          alignment: Alignment.topCenter,
-                          child: _showBottomBar
-                              ? Padding(
-                                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                                  child: Row(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 16,
-                                        backgroundColor: colorScheme.primaryContainer,
-                                        child: Text(
-                                          _detail!.author.isNotEmpty ? _detail!.author[0] : '?',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: colorScheme.onPrimaryContainer,
+                    // WebView 填满整个 body
+                    Positioned.fill(child: _buildWebView()),
+
+                    // 顶部悬浮层：进度条 + 元信息
+                    Positioned(
+                      top: 0, left: 0, right: 0,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          DetailProgressBar(progress: _readProgress / 100.0),
+                          AnimatedSize(
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.easeInOut,
+                            alignment: Alignment.topCenter,
+                            child: _showBottomBar
+                                ? Padding(
+                                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                                    child: Row(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 16,
+                                          backgroundColor: colorScheme.primaryContainer,
+                                          child: Text(
+                                            _detail!.author.isNotEmpty ? _detail!.author[0] : '?',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: colorScheme.onPrimaryContainer,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(_detail!.author,
-                                              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
-                                            Text(
-                                              '${_detail!.pubDate} · 约 $_estimatedMinutes 分钟 · $_wordCount 字',
-                                              style: theme.textTheme.bodySmall?.copyWith(
-                                                color: colorScheme.onSurfaceVariant,
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(_detail!.author,
+                                                style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+                                              Text(
+                                                '${_detail!.pubDate} · 约 $_estimatedMinutes 分钟 · $_wordCount 字',
+                                                style: theme.textTheme.bodySmall?.copyWith(
+                                                  color: colorScheme.onSurfaceVariant,
+                                                ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              : const SizedBox(width: double.infinity, height: 0),
-                        ),
-                        Expanded(child: _buildWebView()),
-                      ],
+                                      ],
+                                    ),
+                                  )
+                                : const SizedBox(width: double.infinity, height: 0),
+                          ),
+                        ],
+                      ),
                     ),
+
+                    // 底部悬浮层：操作栏
                     Positioned(
                       left: 0, right: 0, bottom: 0,
                       child: DetailBottomBar(
