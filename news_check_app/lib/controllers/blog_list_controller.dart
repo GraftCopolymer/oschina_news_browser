@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:news_check_app/main.dart';
 import 'package:news_check_app/models/models.dart';
+import 'package:news_check_app/utils/error_logger.dart';
 
 /// 使用前需确保已经登录
 class BlogListController extends GetxController {
@@ -21,7 +22,8 @@ class BlogListController extends GetxController {
     try {
       await _load();
       hasError.value = false;
-    } on DioException {
+    } on DioException catch (e, st) {
+      logError('博客列表加载失败', e, st);
       hasError.value = blogList.isEmpty;
       rethrow;
     } finally {

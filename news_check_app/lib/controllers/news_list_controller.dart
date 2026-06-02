@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:news_check_app/main.dart';
 import 'package:news_check_app/models/models.dart';
+import 'package:news_check_app/utils/error_logger.dart';
 
 /// 使用前需确保已经登录
 class NewsListController extends GetxController {
@@ -19,7 +20,8 @@ class NewsListController extends GetxController {
     try {
       await _load();
       hasError.value = false;
-    } on DioException {
+    } on DioException catch (e, st) {
+      logError('新闻列表加载失败', e, st);
       hasError.value = newsList.isEmpty;
       rethrow;
     } finally {

@@ -10,7 +10,7 @@ class _DownloadTask {
   final int id;
   final String cacheKey;
   final String url;
-  int retryCount;
+  int retryCount = 0;
 
   _DownloadTask({
     required this.id,

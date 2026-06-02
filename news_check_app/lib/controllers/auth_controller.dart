@@ -9,6 +9,7 @@ import 'package:news_check_app/mixins/future_load_mixin.dart';
 import 'package:news_check_app/models/models.dart';
 import 'package:news_check_app/utils/store_keys.dart';
 import 'package:news_check_app/utils/store_utils.dart';
+import 'package:news_check_app/utils/error_logger.dart';
 
 enum UrlFetchStatus { loading, failed, success }
 enum LoginAppStatus { loading, failed, success }
@@ -81,7 +82,8 @@ class AuthController extends GetxController with FutureLoadMixin {
         urlFetchStatus.value = UrlFetchStatus.failed;
         urlFetchErrorMsg = "网络错误 ${resp.statusCode}";
       }
-    } on DioException {
+    } on DioException catch (e, st) {
+      logError('获取授权链接失败', e, st);
       authUrl.value = "";
       urlFetchStatus.value = UrlFetchStatus.failed;
       urlFetchErrorMsg = "网络错误";
