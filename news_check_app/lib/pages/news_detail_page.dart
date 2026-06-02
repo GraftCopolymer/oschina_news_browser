@@ -237,40 +237,43 @@ class _NewsDetailPageState extends State<NewsDetailPage>
                             curve: Curves.easeInOut,
                             alignment: Alignment.topCenter,
                             child: _showBottomBar
-                                ? Padding(
-                                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                                    child: Row(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 16,
-                                          backgroundColor: colorScheme.primaryContainer,
-                                          child: Text(
-                                            _detail!.author.isNotEmpty ? _detail!.author[0] : '?',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: colorScheme.onPrimaryContainer,
+                                ? Container(
+                                    color: colorScheme.surface,
+                                    child: Padding(
+                                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                                      child: Row(
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 16,
+                                            backgroundColor: colorScheme.primaryContainer,
+                                            child: Text(
+                                              _detail!.author.isNotEmpty ? _detail!.author[0] : '?',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: colorScheme.onPrimaryContainer,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(_detail!.author,
-                                                style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
-                                              Text(
-                                                '${_detail!.pubDate} · 约 $_estimatedMinutes 分钟 · $_wordCount 字',
-                                                style: theme.textTheme.bodySmall?.copyWith(
-                                                  color: colorScheme.onSurfaceVariant,
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(_detail!.author,
+                                                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+                                                Text(
+                                                  '${_detail!.pubDate} · 约 $_estimatedMinutes 分钟 · $_wordCount 字',
+                                                  style: theme.textTheme.bodySmall?.copyWith(
+                                                    color: colorScheme.onSurfaceVariant,
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  )
+                                )
                                 : const SizedBox(width: double.infinity, height: 0),
                           ),
                         ],
