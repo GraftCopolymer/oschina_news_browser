@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:news_check_app/controllers/app_settings_controller.dart';
 import 'package:news_check_app/controllers/auth_controller.dart';
 import 'package:news_check_app/controllers/offline_cache_controller.dart';
+import 'package:news_check_app/controllers/reading_settings_controller.dart';
 import 'package:news_check_app/controllers/reading_stats_controller.dart';
 import 'package:news_check_app/database/database_helper.dart';
 import 'package:news_check_app/network/token_interceptor.dart';
@@ -37,6 +38,7 @@ Future<void> main() async {
   final appSettingsController = Get.put(AppSettingsController());
   Get.put(OfflineCacheController());
   Get.put(ReadingStatsController());
+  Get.put(ReadingSettingsController());
   // 等待加载用户信息
   await authController.loadingFuture;
   await appSettingsController.loadingFuture;
