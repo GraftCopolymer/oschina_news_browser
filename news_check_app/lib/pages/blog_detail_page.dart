@@ -188,13 +188,6 @@ class _BlogDetailPageState extends State<BlogDetailPage>
     return Scaffold(
       appBar: AppBar(
         title: const Text("博客详情"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.text_fields),
-            tooltip: '阅读设置',
-            onPressed: () => showReadingSettingsSheet(context),
-          ),
-        ],
       ),
       body: _loading && _detail == null
           ? const Center(child: ShimmerCard())

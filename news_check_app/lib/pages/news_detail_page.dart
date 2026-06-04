@@ -193,13 +193,6 @@ class _NewsDetailPageState extends State<NewsDetailPage>
     return Scaffold(
       appBar: AppBar(
         title: const Text("详情"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.text_fields),
-            tooltip: '阅读设置',
-            onPressed: () => showReadingSettingsSheet(context),
-          ),
-        ],
       ),
       body: _loading && _detail == null
           ? const Center(child: ShimmerCard())
