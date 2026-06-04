@@ -5,6 +5,7 @@ class DetailBottomBar extends StatelessWidget {
   final VoidCallback onFontSettings;
   final VoidCallback onToc;
   final VoidCallback onBookmark;
+  final bool isFavorited;
 
   const DetailBottomBar({
     super.key,
@@ -12,6 +13,7 @@ class DetailBottomBar extends StatelessWidget {
     required this.onFontSettings,
     required this.onToc,
     required this.onBookmark,
+    this.isFavorited = false,
   });
 
   @override
@@ -52,8 +54,9 @@ class DetailBottomBar extends StatelessWidget {
                     onTap: onToc,
                   ),
                   _BarButton(
-                    icon: Icons.bookmark_border,
+                    icon: isFavorited ? Icons.bookmark : Icons.bookmark_border,
                     label: '收藏',
+                    color: isFavorited ? const Color(0xFF0D9488) : null,
                     onTap: onBookmark,
                   ),
                   _BarButton(
@@ -77,20 +80,22 @@ class _BarButton extends StatelessWidget {
   final String label;
   final VoidCallback? onTap;
   final bool disabled;
+  final Color? color;
 
   const _BarButton({
     required this.icon,
     required this.label,
     this.onTap,
     this.disabled = false,
+    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final foreground = disabled
-        ? colorScheme.onSurface.withAlpha(80)
-        : colorScheme.onSurface;
+        ? (color ?? colorScheme.onSurface).withAlpha(80)
+        : (color ?? colorScheme.onSurface);
     return InkWell(
       onTap: disabled ? null : onTap,
       borderRadius: BorderRadius.circular(8),
