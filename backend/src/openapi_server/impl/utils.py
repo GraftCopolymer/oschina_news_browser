@@ -5,7 +5,10 @@ from pydantic import StrictStr, StrictInt
 from typing_extensions import Optional, Dict, Any
 
 from openapi_server.config.config import get_settings
+from openapi_server.context import current_token
+from openapi_server.database.redis import redis_client
 from openapi_server.models.api_response import ApiResponse
+from openapi_server.models.extra_models import TokenModel, User
 
 headers = {
     "User-Agent": "Mozilla/5.0" # 不加这个 OSCHINA 不会允许访问
