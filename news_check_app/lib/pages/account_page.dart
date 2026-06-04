@@ -4,6 +4,7 @@ import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:get/instance_manager.dart';
 import 'package:news_check_app/controllers/auth_controller.dart';
 import 'package:news_check_app/pages/about_page.dart';
+import 'package:news_check_app/pages/collect_page.dart';
 import 'package:news_check_app/pages/login_page.dart';
 import 'package:news_check_app/pages/settings_page.dart';
 import 'package:news_check_app/pages/stats_page.dart';
@@ -174,7 +175,9 @@ class _AccountPageState extends State<AccountPage> {
               ),
               child: Column(
                 children: [
-                  _listTile(Icons.star_border, "我的收藏", () {}),
+                  _listTile(Icons.star_border, "我的收藏", () {
+  Get.to(() => const CollectPage());
+}),
                   const Divider(height: 1, indent: 56),
                   _listTile(Icons.palette_outlined, "主题设置", () {
                     Get.to(() => const SettingsPage());
