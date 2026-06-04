@@ -42,6 +42,7 @@ class _NewsDetailPageState extends State<NewsDetailPage>
   // 元信息
   int _wordCount = 0;
   int _estimatedMinutes = 1;
+  bool _isFavorited = false;
 
   final _settingsCtrl = Get.find<ReadingSettingsController>();
 
@@ -69,6 +70,7 @@ class _NewsDetailPageState extends State<NewsDetailPage>
           _loading = false;
           _wordCount = count;
           _estimatedMinutes = (count / 300).ceil().clamp(1, 999);
+          _isFavorited = detail.favorite == 1;
         });
       }
     }
@@ -103,6 +105,7 @@ class _NewsDetailPageState extends State<NewsDetailPage>
           _detail = newsDetail;
           _wordCount = wordCount;
           _estimatedMinutes = (wordCount / 300).ceil().clamp(1, 999);
+          _isFavorited = newsDetail.favorite == 1;
         });
       }
     } catch (e) {
@@ -171,6 +174,30 @@ class _NewsDetailPageState extends State<NewsDetailPage>
         );
       },
     );
+  }
+
+  Future<void> _toggleFavorite() async {
+    final newState = !_isFavorited;
+    setState(() => _isFavorited = newState);
+
+    try {
+      if (newState) {
+        await api.collectAddPost(collectRequest: {
+          "targetType": "news",
+          "targetId": widget.newsId,
+        });
+        Fluttertoast.showToast(msg: "已收藏");
+      } else {
+        await api.collectRemovePost(collectRequest: {
+          "targetType": "news",
+          "targetId": widget.newsId,
+        });
+        Fluttertoast.showToast(msg: "已取消收藏");
+      }
+    } catch (e) {
+      setState(() => _isFavorited = !newState);
+      Fluttertoast.showToast(msg: "操作失败，请重试");
+    }
   }
 
   @override
@@ -279,8 +306,9 @@ class _NewsDetailPageState extends State<NewsDetailPage>
                       child: DetailBottomBar(
                         isVisible: _showBottomBar,
                         onFontSettings: () => showReadingSettingsSheet(context),
+                        isFavorited: _isFavorited,
                         onToc: _showToc,
-                        onBookmark: () => Fluttertoast.showToast(msg: "收藏功能开发中"),
+                        onBookmark: () => _toggleFavorite(),
                       ),
                     ),
                   ],

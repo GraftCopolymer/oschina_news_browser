@@ -38,6 +38,7 @@ class _BlogDetailPageState extends State<BlogDetailPage>
   final _scrollToTocNotifier = ValueNotifier<String?>(null);
   int _wordCount = 0;
   int _estimatedMinutes = 1;
+  bool _isFavorited = false;
 
   final _settingsCtrl = Get.find<ReadingSettingsController>();
 
@@ -64,6 +65,7 @@ class _BlogDetailPageState extends State<BlogDetailPage>
           _loading = false;
           _wordCount = count;
           _estimatedMinutes = (count / 300).ceil().clamp(1, 999);
+          _isFavorited = detail.favorite == 1;
         });
       }
     }
@@ -98,6 +100,7 @@ class _BlogDetailPageState extends State<BlogDetailPage>
           _detail = blogDetail;
           _wordCount = wordCount;
           _estimatedMinutes = (wordCount / 300).ceil().clamp(1, 999);
+          _isFavorited = blogDetail.favorite == 1;
         });
       }
     } catch (e) {
@@ -166,6 +169,30 @@ class _BlogDetailPageState extends State<BlogDetailPage>
         );
       },
     );
+  }
+
+  Future<void> _toggleFavorite() async {
+    final newState = !_isFavorited;
+    setState(() => _isFavorited = newState);
+
+    try {
+      if (newState) {
+        await api.collectAddPost(collectRequest: {
+          "targetType": "blog",
+          "targetId": widget.blogId,
+        });
+        Fluttertoast.showToast(msg: "已收藏");
+      } else {
+        await api.collectRemovePost(collectRequest: {
+          "targetType": "blog",
+          "targetId": widget.blogId,
+        });
+        Fluttertoast.showToast(msg: "已取消收藏");
+      }
+    } catch (e) {
+      setState(() => _isFavorited = !newState);
+      Fluttertoast.showToast(msg: "操作失败，请重试");
+    }
   }
 
   @override
@@ -274,8 +301,9 @@ class _BlogDetailPageState extends State<BlogDetailPage>
                       child: DetailBottomBar(
                         isVisible: _showBottomBar,
                         onFontSettings: () => showReadingSettingsSheet(context),
+                        isFavorited: _isFavorited,
                         onToc: _showToc,
-                        onBookmark: () => Fluttertoast.showToast(msg: "收藏功能开发中"),
+                        onBookmark: () => _toggleFavorite(),
                       ),
                     ),
                   ],
