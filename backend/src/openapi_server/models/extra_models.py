@@ -1,5 +1,7 @@
 # coding: utf-8
 
+from typing import Optional
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -44,6 +46,7 @@ class NewsDetail(BaseModel):
     author: str
     title: str
     authorid: int
+    favorite: Optional[int] = None  # 0-未收藏 1-已收藏
 
 class BlogSimple(BaseModel):
     id: int
@@ -61,3 +64,4 @@ class BlogDetail(BaseModel):
     author: str
     title: str
     authorid: int
+    favorite: Optional[int] = None  # 0-未收藏 1-已收藏
