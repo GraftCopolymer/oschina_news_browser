@@ -60,3 +60,87 @@ async def fetch_user_info(access_token: StrictStr):
         if resp.status_code != 200:
             raise HTTPException(400, "获取用户信息失败")
         return resp.json()
+
+def get_current_token_model() -> TokenModel:
+    token_model = current_token.get()
+    if not token_model:
+        raise HTTPException(status_code=401, detail="未提供用户 Token")
+    return token_model
+
+async def get_current_user() -> User:
+    token_model = get_current_token_model()
+    # 从 Redis 中寻找用户信息
+    oschina_token_string: Optional[StrictStr] = redis_client.get(token_model.sub)
+    user_uid = int(token_model.sub)
+    user: Optional[User] = None
+    if oschina_token_string: # Redis中有缓存
+        print("从 Redis 中读取用户成功")
+        with SessionLocal() as db:
+            db_user: DBUser = db.query(DBUser).filter(DBUser.id == user_uid).first()
+            # 数据库中肯定存在该用户
+            user = User.model_validate(db_user)
+    else: # Redis 中无缓存
+         print("从 Redis 中读取用户失败, 尝试在数据库查找")
+         with SessionLocal() as db:
+            db_user: Optional[DBUser] = db.query(DBUser).filter(DBUser.id == user_uid).first()
+            if not db_user:
+                raise HTTPException(status_code=401, detail="用户不存在")
+            user = User.model_validate(db_user)
+    return user
+
+
+async def oschina_collect_add(access_token: str, obj_id: int, obj_type: int) -> dict:
+    """调用 OSCHINA 添加收藏"""
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(
+            oschina("/action/openapi/favorite_add"),
+            data={
+                "access_token": access_token,
+                "id": obj_id,
+                "type": obj_type,
+                "dataType": "json",
+            },
+            headers=headers,
+        )
+        if resp.status_code != 200:
+            raise HTTPException(status_code=500, detail="OSCHINA 收藏失败")
+        return resp.json()
+
+
+async def oschina_collect_remove(access_token: str, obj_id: int, obj_type: int) -> dict:
+    """调用 OSCHINA 取消收藏"""
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(
+            oschina("/action/openapi/favorite_remove"),
+            data={
+                "access_token": access_token,
+                "id": obj_id,
+                "type": obj_type,
+                "dataType": "json",
+            },
+            headers=headers,
+        )
+        if resp.status_code != 200:
+            raise HTTPException(status_code=500, detail="OSCHINA 取消收藏失败")
+        return resp.json()
+
+
+async def oschina_collect_list(
+    access_token: str, type: int = 0, page: int = 1, page_size: int = 20
+) -> dict:
+    """调用 OSCHINA 获取收藏列表"""
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(
+            oschina("/action/openapi/favorite_list"),
+            data={
+                "access_token": access_token,
+                "type": type,
+                "page": page,
+                "pageSize": page_size,
+                "dataType": "json",
+            },
+            headers=headers,
+        )
+        if resp.status_code != 200:
+            raise HTTPException(status_code=500, detail="OSCHINA 获取收藏列表失败")
+        return resp.json()
