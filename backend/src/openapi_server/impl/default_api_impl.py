@@ -13,6 +13,8 @@ from openapi_server.database.redis import redis_client
 from openapi_server.impl.utils import (
     success_response, oschina_code2token, error_response, create_app_jwt,
     fetch_user_info, oschina, headers,
+    fetch_user_info, oschina, get_current_user, headers,
+    oschina_collect_add, oschina_collect_remove, oschina_collect_list,
 )
 from openapi_server.impl.auth_utils import UserDep
 from openapi_server.models.api_response import ApiResponse
@@ -377,6 +379,20 @@ async def collect_add_post(
     """保存收藏类型+ID，后端关联用户"""
     # TODO: 实现后端收藏逻辑（需要添加收藏数据库表）
     return success_response(data=None, msg="收藏成功（暂未持久化）")
+    user = await get_current_user()
+    type_map = {"news": 4, "blog": 3}
+    oschina_type = type_map.get(collect_request.target_type)
+    if oschina_type is None:
+        raise HTTPException(status_code=400, detail="不支持的收藏类型")
+    try:
+        result = await oschina_collect_add(
+            user.oschina_token, collect_request.target_id, oschina_type
+        )
+        return success_response(data=result, msg="收藏成功")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"收藏失败: {e}")
 
 
 @router.post(
@@ -393,8 +409,20 @@ async def collect_remove_post(
     user: UserDep,
     collect_request: CollectRequest = Body(None, description=""),
 ) -> ApiResponse:
-    # TODO: 实现后端取消收藏逻辑
-    return success_response(data=None, msg="已取消收藏（暂未持久化）")
+    user = await get_current_user()
+    type_map = {"news": 4, "blog": 3}
+    oschina_type = type_map.get(collect_request.target_type)
+    if oschina_type is None:
+        raise HTTPException(status_code=400, detail="不支持的收藏类型")
+    try:
+        result = await oschina_collect_remove(
+            user.oschina_token, collect_request.target_id, oschina_type
+        )
+        return success_response(data=result, msg="已取消收藏")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"取消收藏失败: {e}")
 
 
 @router.get(
@@ -412,6 +440,13 @@ async def collect_list_get(
     page: Optional[StrictInt] = Query(1, description="", alias="page"),
     page_size: Optional[StrictInt] = Query(20, description="", alias="pageSize"),
 ) -> ApiResponse:
-    """后端根据收藏ID批量请求OSCHINA，返回列表数据"""
-    # TODO: 实现后端收藏列表逻辑
-    return success_response(data={"list": [], "total": 0, "page": page, "pageSize": page_size})
+    user = await get_current_user()
+    try:
+        result = await oschina_collect_list(
+            user.oschina_token, type=0, page=page, page_size=page_size
+        )
+        return success_response(data=result, msg="获取成功")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"获取收藏列表失败: {e}")
