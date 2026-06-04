@@ -565,7 +565,7 @@ as String,
 /// @nodoc
 mixin _$NewsDetail {
 
- int get id; String get body; String get pubDate; String get author; String get title; int get authorid;
+ int get id; String get body; String get pubDate; String get author; String get title; int get authorid; int? get favorite;
 /// Create a copy of NewsDetail
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -578,16 +578,16 @@ $NewsDetailCopyWith<NewsDetail> get copyWith => _$NewsDetailCopyWithImpl<NewsDet
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is NewsDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.body, body) || other.body == body)&&(identical(other.pubDate, pubDate) || other.pubDate == pubDate)&&(identical(other.author, author) || other.author == author)&&(identical(other.title, title) || other.title == title)&&(identical(other.authorid, authorid) || other.authorid == authorid));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NewsDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.body, body) || other.body == body)&&(identical(other.pubDate, pubDate) || other.pubDate == pubDate)&&(identical(other.author, author) || other.author == author)&&(identical(other.title, title) || other.title == title)&&(identical(other.authorid, authorid) || other.authorid == authorid)&&(identical(other.favorite, favorite) || other.favorite == favorite));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,body,pubDate,author,title,authorid);
+int get hashCode => Object.hash(runtimeType,id,body,pubDate,author,title,authorid,favorite);
 
 @override
 String toString() {
-  return 'NewsDetail(id: $id, body: $body, pubDate: $pubDate, author: $author, title: $title, authorid: $authorid)';
+  return 'NewsDetail(id: $id, body: $body, pubDate: $pubDate, author: $author, title: $title, authorid: $authorid, favorite: $favorite)';
 }
 
 
@@ -598,7 +598,7 @@ abstract mixin class $NewsDetailCopyWith<$Res>  {
   factory $NewsDetailCopyWith(NewsDetail value, $Res Function(NewsDetail) _then) = _$NewsDetailCopyWithImpl;
 @useResult
 $Res call({
- int id, String body, String pubDate, String author, String title, int authorid
+ int id, String body, String pubDate, String author, String title, int authorid, int? favorite
 });
 
 
@@ -615,7 +615,7 @@ class _$NewsDetailCopyWithImpl<$Res>
 
 /// Create a copy of NewsDetail
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? body = null,Object? pubDate = null,Object? author = null,Object? title = null,Object? authorid = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? body = null,Object? pubDate = null,Object? author = null,Object? title = null,Object? authorid = null,Object? favorite = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,body: null == body ? _self.body : body // ignore: cast_nullable_to_non_nullable
@@ -623,7 +623,8 @@ as String,pubDate: null == pubDate ? _self.pubDate : pubDate // ignore: cast_nul
 as String,author: null == author ? _self.author : author // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,authorid: null == authorid ? _self.authorid : authorid // ignore: cast_nullable_to_non_nullable
-as int,
+as int,favorite: freezed == favorite ? _self.favorite : favorite // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -708,10 +709,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String body,  String pubDate,  String author,  String title,  int authorid)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String body,  String pubDate,  String author,  String title,  int authorid,  int? favorite)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _NewsDetail() when $default != null:
-return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that.authorid);case _:
+return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that.authorid,_that.favorite);case _:
   return orElse();
 
 }
@@ -729,10 +730,10 @@ return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String body,  String pubDate,  String author,  String title,  int authorid)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String body,  String pubDate,  String author,  String title,  int authorid,  int? favorite)  $default,) {final _that = this;
 switch (_that) {
 case _NewsDetail():
-return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that.authorid);case _:
+return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that.authorid,_that.favorite);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -749,10 +750,10 @@ return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String body,  String pubDate,  String author,  String title,  int authorid)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String body,  String pubDate,  String author,  String title,  int authorid,  int? favorite)?  $default,) {final _that = this;
 switch (_that) {
 case _NewsDetail() when $default != null:
-return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that.authorid);case _:
+return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that.authorid,_that.favorite);case _:
   return null;
 
 }
@@ -764,7 +765,7 @@ return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that
 @JsonSerializable()
 
 class _NewsDetail implements NewsDetail {
-  const _NewsDetail({required this.id, required this.body, required this.pubDate, required this.author, required this.title, required this.authorid});
+  const _NewsDetail({required this.id, required this.body, required this.pubDate, required this.author, required this.title, required this.authorid, this.favorite});
   factory _NewsDetail.fromJson(Map<String, dynamic> json) => _$NewsDetailFromJson(json);
 
 @override final  int id;
@@ -773,6 +774,7 @@ class _NewsDetail implements NewsDetail {
 @override final  String author;
 @override final  String title;
 @override final  int authorid;
+@override final  int? favorite;
 
 /// Create a copy of NewsDetail
 /// with the given fields replaced by the non-null parameter values.
@@ -787,16 +789,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NewsDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.body, body) || other.body == body)&&(identical(other.pubDate, pubDate) || other.pubDate == pubDate)&&(identical(other.author, author) || other.author == author)&&(identical(other.title, title) || other.title == title)&&(identical(other.authorid, authorid) || other.authorid == authorid));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NewsDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.body, body) || other.body == body)&&(identical(other.pubDate, pubDate) || other.pubDate == pubDate)&&(identical(other.author, author) || other.author == author)&&(identical(other.title, title) || other.title == title)&&(identical(other.authorid, authorid) || other.authorid == authorid)&&(identical(other.favorite, favorite) || other.favorite == favorite));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,body,pubDate,author,title,authorid);
+int get hashCode => Object.hash(runtimeType,id,body,pubDate,author,title,authorid,favorite);
 
 @override
 String toString() {
-  return 'NewsDetail(id: $id, body: $body, pubDate: $pubDate, author: $author, title: $title, authorid: $authorid)';
+  return 'NewsDetail(id: $id, body: $body, pubDate: $pubDate, author: $author, title: $title, authorid: $authorid, favorite: $favorite)';
 }
 
 
@@ -807,7 +809,7 @@ abstract mixin class _$NewsDetailCopyWith<$Res> implements $NewsDetailCopyWith<$
   factory _$NewsDetailCopyWith(_NewsDetail value, $Res Function(_NewsDetail) _then) = __$NewsDetailCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String body, String pubDate, String author, String title, int authorid
+ int id, String body, String pubDate, String author, String title, int authorid, int? favorite
 });
 
 
@@ -824,7 +826,7 @@ class __$NewsDetailCopyWithImpl<$Res>
 
 /// Create a copy of NewsDetail
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? body = null,Object? pubDate = null,Object? author = null,Object? title = null,Object? authorid = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? body = null,Object? pubDate = null,Object? author = null,Object? title = null,Object? authorid = null,Object? favorite = freezed,}) {
   return _then(_NewsDetail(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,body: null == body ? _self.body : body // ignore: cast_nullable_to_non_nullable
@@ -832,7 +834,8 @@ as String,pubDate: null == pubDate ? _self.pubDate : pubDate // ignore: cast_nul
 as String,author: null == author ? _self.author : author // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,authorid: null == authorid ? _self.authorid : authorid // ignore: cast_nullable_to_non_nullable
-as int,
+as int,favorite: freezed == favorite ? _self.favorite : favorite // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -1124,7 +1127,7 @@ as int,
 /// @nodoc
 mixin _$BlogDetail {
 
- int get id; String get body; String get pubDate; String get author; String get title; int get authorid;
+ int get id; String get body; String get pubDate; String get author; String get title; int get authorid; int? get favorite;
 /// Create a copy of BlogDetail
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1137,16 +1140,16 @@ $BlogDetailCopyWith<BlogDetail> get copyWith => _$BlogDetailCopyWithImpl<BlogDet
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BlogDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.body, body) || other.body == body)&&(identical(other.pubDate, pubDate) || other.pubDate == pubDate)&&(identical(other.author, author) || other.author == author)&&(identical(other.title, title) || other.title == title)&&(identical(other.authorid, authorid) || other.authorid == authorid));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BlogDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.body, body) || other.body == body)&&(identical(other.pubDate, pubDate) || other.pubDate == pubDate)&&(identical(other.author, author) || other.author == author)&&(identical(other.title, title) || other.title == title)&&(identical(other.authorid, authorid) || other.authorid == authorid)&&(identical(other.favorite, favorite) || other.favorite == favorite));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,body,pubDate,author,title,authorid);
+int get hashCode => Object.hash(runtimeType,id,body,pubDate,author,title,authorid,favorite);
 
 @override
 String toString() {
-  return 'BlogDetail(id: $id, body: $body, pubDate: $pubDate, author: $author, title: $title, authorid: $authorid)';
+  return 'BlogDetail(id: $id, body: $body, pubDate: $pubDate, author: $author, title: $title, authorid: $authorid, favorite: $favorite)';
 }
 
 
@@ -1157,7 +1160,7 @@ abstract mixin class $BlogDetailCopyWith<$Res>  {
   factory $BlogDetailCopyWith(BlogDetail value, $Res Function(BlogDetail) _then) = _$BlogDetailCopyWithImpl;
 @useResult
 $Res call({
- int id, String body, String pubDate, String author, String title, int authorid
+ int id, String body, String pubDate, String author, String title, int authorid, int? favorite
 });
 
 
@@ -1174,7 +1177,7 @@ class _$BlogDetailCopyWithImpl<$Res>
 
 /// Create a copy of BlogDetail
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? body = null,Object? pubDate = null,Object? author = null,Object? title = null,Object? authorid = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? body = null,Object? pubDate = null,Object? author = null,Object? title = null,Object? authorid = null,Object? favorite = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,body: null == body ? _self.body : body // ignore: cast_nullable_to_non_nullable
@@ -1182,7 +1185,8 @@ as String,pubDate: null == pubDate ? _self.pubDate : pubDate // ignore: cast_nul
 as String,author: null == author ? _self.author : author // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,authorid: null == authorid ? _self.authorid : authorid // ignore: cast_nullable_to_non_nullable
-as int,
+as int,favorite: freezed == favorite ? _self.favorite : favorite // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -1267,10 +1271,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String body,  String pubDate,  String author,  String title,  int authorid)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String body,  String pubDate,  String author,  String title,  int authorid,  int? favorite)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BlogDetail() when $default != null:
-return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that.authorid);case _:
+return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that.authorid,_that.favorite);case _:
   return orElse();
 
 }
@@ -1288,10 +1292,10 @@ return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String body,  String pubDate,  String author,  String title,  int authorid)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String body,  String pubDate,  String author,  String title,  int authorid,  int? favorite)  $default,) {final _that = this;
 switch (_that) {
 case _BlogDetail():
-return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that.authorid);case _:
+return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that.authorid,_that.favorite);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1308,10 +1312,10 @@ return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String body,  String pubDate,  String author,  String title,  int authorid)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String body,  String pubDate,  String author,  String title,  int authorid,  int? favorite)?  $default,) {final _that = this;
 switch (_that) {
 case _BlogDetail() when $default != null:
-return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that.authorid);case _:
+return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that.authorid,_that.favorite);case _:
   return null;
 
 }
@@ -1323,7 +1327,7 @@ return $default(_that.id,_that.body,_that.pubDate,_that.author,_that.title,_that
 @JsonSerializable()
 
 class _BlogDetail implements BlogDetail {
-  const _BlogDetail({required this.id, required this.body, required this.pubDate, required this.author, required this.title, required this.authorid});
+  const _BlogDetail({required this.id, required this.body, required this.pubDate, required this.author, required this.title, required this.authorid, this.favorite});
   factory _BlogDetail.fromJson(Map<String, dynamic> json) => _$BlogDetailFromJson(json);
 
 @override final  int id;
@@ -1332,6 +1336,7 @@ class _BlogDetail implements BlogDetail {
 @override final  String author;
 @override final  String title;
 @override final  int authorid;
+@override final  int? favorite;
 
 /// Create a copy of BlogDetail
 /// with the given fields replaced by the non-null parameter values.
@@ -1346,16 +1351,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BlogDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.body, body) || other.body == body)&&(identical(other.pubDate, pubDate) || other.pubDate == pubDate)&&(identical(other.author, author) || other.author == author)&&(identical(other.title, title) || other.title == title)&&(identical(other.authorid, authorid) || other.authorid == authorid));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BlogDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.body, body) || other.body == body)&&(identical(other.pubDate, pubDate) || other.pubDate == pubDate)&&(identical(other.author, author) || other.author == author)&&(identical(other.title, title) || other.title == title)&&(identical(other.authorid, authorid) || other.authorid == authorid)&&(identical(other.favorite, favorite) || other.favorite == favorite));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,body,pubDate,author,title,authorid);
+int get hashCode => Object.hash(runtimeType,id,body,pubDate,author,title,authorid,favorite);
 
 @override
 String toString() {
-  return 'BlogDetail(id: $id, body: $body, pubDate: $pubDate, author: $author, title: $title, authorid: $authorid)';
+  return 'BlogDetail(id: $id, body: $body, pubDate: $pubDate, author: $author, title: $title, authorid: $authorid, favorite: $favorite)';
 }
 
 
@@ -1366,7 +1371,7 @@ abstract mixin class _$BlogDetailCopyWith<$Res> implements $BlogDetailCopyWith<$
   factory _$BlogDetailCopyWith(_BlogDetail value, $Res Function(_BlogDetail) _then) = __$BlogDetailCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String body, String pubDate, String author, String title, int authorid
+ int id, String body, String pubDate, String author, String title, int authorid, int? favorite
 });
 
 
@@ -1383,7 +1388,7 @@ class __$BlogDetailCopyWithImpl<$Res>
 
 /// Create a copy of BlogDetail
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? body = null,Object? pubDate = null,Object? author = null,Object? title = null,Object? authorid = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? body = null,Object? pubDate = null,Object? author = null,Object? title = null,Object? authorid = null,Object? favorite = freezed,}) {
   return _then(_BlogDetail(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,body: null == body ? _self.body : body // ignore: cast_nullable_to_non_nullable
@@ -1391,7 +1396,8 @@ as String,pubDate: null == pubDate ? _self.pubDate : pubDate // ignore: cast_nul
 as String,author: null == author ? _self.author : author // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,authorid: null == authorid ? _self.authorid : authorid // ignore: cast_nullable_to_non_nullable
-as int,
+as int,favorite: freezed == favorite ? _self.favorite : favorite // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

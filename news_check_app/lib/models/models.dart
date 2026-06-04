@@ -39,6 +39,7 @@ abstract class NewsDetail with _$NewsDetail {
     required String author,
     required String title,
     required int authorid,
+    int? favorite,
   }) = _NewsDetail;
 
   factory NewsDetail.fromJson(Map<String, Object?> json) => _$NewsDetailFromJson(json);
@@ -70,8 +71,7 @@ abstract class BlogDetail with _$BlogDetail {
     required String author,
     required String title,
     required int authorid,
-    // 提示：如果 Blog 接口返回了额外字段，例如评论数或分类，请在此添加：
-    // required int commentCount,
+    int? favorite,
   }) = _BlogDetail;
 
   factory BlogDetail.fromJson(Map<String, Object?> json) => _$BlogDetailFromJson(json);

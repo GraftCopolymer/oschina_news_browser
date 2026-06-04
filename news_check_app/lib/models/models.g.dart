@@ -46,6 +46,7 @@ _NewsDetail _$NewsDetailFromJson(Map<String, dynamic> json) => _NewsDetail(
   author: json['author'] as String,
   title: json['title'] as String,
   authorid: (json['authorid'] as num).toInt(),
+  favorite: (json['favorite'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$NewsDetailToJson(_NewsDetail instance) =>
@@ -56,6 +57,7 @@ Map<String, dynamic> _$NewsDetailToJson(_NewsDetail instance) =>
       'author': instance.author,
       'title': instance.title,
       'authorid': instance.authorid,
+      'favorite': instance.favorite,
     };
 
 _BlogSimple _$BlogSimpleFromJson(Map<String, dynamic> json) => _BlogSimple(
@@ -86,6 +88,7 @@ _BlogDetail _$BlogDetailFromJson(Map<String, dynamic> json) => _BlogDetail(
   author: json['author'] as String,
   title: json['title'] as String,
   authorid: (json['authorid'] as num).toInt(),
+  favorite: (json['favorite'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$BlogDetailToJson(_BlogDetail instance) =>
@@ -96,6 +99,7 @@ Map<String, dynamic> _$BlogDetailToJson(_BlogDetail instance) =>
       'author': instance.author,
       'title': instance.title,
       'authorid': instance.authorid,
+      'favorite': instance.favorite,
     };
 
 _TokenModel _$TokenModelFromJson(Map<String, dynamic> json) =>
