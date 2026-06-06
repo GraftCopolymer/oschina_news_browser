@@ -13,7 +13,6 @@ from openapi_server.database.redis import redis_client
 from openapi_server.impl.utils import (
     success_response, oschina_code2token, error_response, create_app_jwt,
     fetch_user_info, oschina, headers,
-    fetch_user_info, oschina, get_current_user, headers,
     oschina_collect_add, oschina_collect_remove, oschina_collect_list,
 )
 from openapi_server.impl.auth_utils import UserDep
@@ -376,10 +375,6 @@ async def collect_add_post(
     user: UserDep,
     collect_request: CollectRequest = Body(None, description=""),
 ) -> ApiResponse:
-    """保存收藏类型+ID，后端关联用户"""
-    # TODO: 实现后端收藏逻辑（需要添加收藏数据库表）
-    return success_response(data=None, msg="收藏成功（暂未持久化）")
-    user = await get_current_user()
     type_map = {"news": 4, "blog": 3}
     oschina_type = type_map.get(collect_request.target_type)
     if oschina_type is None:
@@ -409,7 +404,6 @@ async def collect_remove_post(
     user: UserDep,
     collect_request: CollectRequest = Body(None, description=""),
 ) -> ApiResponse:
-    user = await get_current_user()
     type_map = {"news": 4, "blog": 3}
     oschina_type = type_map.get(collect_request.target_type)
     if oschina_type is None:
@@ -440,7 +434,6 @@ async def collect_list_get(
     page: Optional[StrictInt] = Query(1, description="", alias="page"),
     page_size: Optional[StrictInt] = Query(20, description="", alias="pageSize"),
 ) -> ApiResponse:
-    user = await get_current_user()
     try:
         result = await oschina_collect_list(
             user.oschina_token, type=0, page=page, page_size=page_size
