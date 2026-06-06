@@ -120,6 +120,7 @@ flutter run
 - **认证**: `security_api.py` 的 `get_token_BearerAuth` 作为 Security dependency，自动验证 JWT 过期
 - **OSCHINA 代理**: `impl/utils.py` 的 `oschina(path)` 拼接完整 URL，`headers` 包含 User-Agent 绕过限制
 - **新加路由**: 在 `impl/default_api_impl.py` 中添加 `@router.xxx` 函数即可
+- **数据库和用户信息**：若需要在Fast API的路径操作函数中获取用户信息，可以在该路径操作函数中声明对应的依赖函数，在``openapi_server/impl/auth_utils.py`中有UserDep依赖。
 
 ## OSCHINA API 文档
 
